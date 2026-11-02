@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "BetterWebWork",
+  "version": "0.1.1",
+  "description": "A cleaner WeBWorK: centered problems, one-click navigation, plain-language answer feedback, saved drafts, dark mode and themes.",
+  "homepage_url": "https://github.com/imanimal/betterwebwork",
+  "author": "imanimal",
+  "icons": { "16": "icons/icon-16.png", "32": "icons/icon-32.png", "48": "icons/icon-48.png", "96": "icons/icon-96.png", "128": "icons/icon-128.png" },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "betterwebwork@imanimal.github.io",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": { "required": ["none"] }
+    }
+  },
+  "background": {
+    "scripts": ["src/lib/util.js", "src/background.js"],
+    "service_worker": "src/background.js"
+  },
+  "action": {
+    "default_popup": "src/pages/popup.html",
+    "default_title": "BetterWebWork",
+    "default_icon": { "16": "icons/icon-16.png", "32": "icons/icon-32.png", "48": "icons/icon-48.png" }
+  },
+  "options_ui": { "page": "src/pages/options.html", "open_in_tab": true },
+  "permissions": ["storage"],
+  "host_permissions": ["*://*/webwork2", "*://*/webwork2/*"],
+  "content_scripts": [
+    {
+      "matches": ["*://*/webwork2", "*://*/webwork2/*"],
+      "js": ["src/lib/util.js", "src/lib/themes.js", "src/lib/ww.js", "src/content/boot.js"],
+      "css": ["src/ui/kit.css", "src/content/webwork.css"],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": ["*://*/webwork2", "*://*/webwork2/*"],
+      "js": ["src/lib/icons.js", "src/lib/advice.js", "src/ui/kit.js", "src/ui/settings.js", "src/content/app.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    { "resources": ["fonts/*.woff2", "src/content/page.js"], "matches": ["*://*/*"] }
+  ],
+  "commands": {
+    "_execute_action": { "suggested_key": { "default": "Alt+Shift+W" }, "description": "Open BetterWebWork" }
+  }
+}

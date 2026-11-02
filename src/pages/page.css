@@ -1,0 +1,52 @@
+/* BetterWebWork: the popup and the options page. kit.css draws the parts; this is the page around them. The pages set
+   html[data-bw-on] themselves and paint the same theme as WeBWorK (themes.look). Fonts load from ../../fonts/. */
+@font-face { font-family: "BW Hyperlegible"; src: url("../../fonts/atkinson-next.woff2") format("woff2"); font-weight: 200 800; font-style: normal; font-display: swap; }
+@font-face { font-family: "BW Hyperlegible"; src: url("../../fonts/atkinson-next-italic.woff2") format("woff2"); font-weight: 200 800; font-style: italic; font-display: swap; }
+@font-face { font-family: "BW Hyperlegible Mono"; src: url("../../fonts/atkinson-mono.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+@font-face { font-family: "BW Space Grotesk"; src: url("../../fonts/space-grotesk.woff2") format("woff2"); font-weight: 300 700; font-display: swap; }
+@font-face { font-family: "BW Space Mono"; src: url("../../fonts/space-mono-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "BW Space Mono"; src: url("../../fonts/space-mono-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "BW Doto"; src: url("../../fonts/doto.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+
+html[data-bw-on] { background: var(--bw-bg); }
+html[data-bw-on] body { margin: 0; background: var(--bw-bg); color: var(--bw-text2); font: 400 14px/1.45 var(--bw-font); }
+html[data-bw-on][data-bw-look="pocket"] body { background-image: radial-gradient(color-mix(in srgb, var(--bw-text) 12%, transparent) 1px, transparent 1.2px); background-size: 16px 16px; }
+html[data-bw-on] a { color: var(--bw-text); text-underline-offset: 2px; }
+html[data-bw-on] .bw-logo { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 6px; background: var(--bw-text); color: var(--bw-bg); font: 700 14px/1 var(--bw-font); flex: none; }
+html[data-bw-on][data-bw-look="pocket"] .bw-logo { background: var(--bw-disp-bg); color: var(--bw-disp-fg); font: 900 calc(24px * var(--bw-ns)) / 1 var(--bw-num); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .25), 0 0 0 2px var(--bw-chrome-bg); border-radius: 4px; }
+
+/* ── popup ── */
+html[data-bw-on] .pp { width: 360px; }
+html[data-bw-on] .pp-head { display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 14px; background: var(--bw-surface); border-bottom: 1px solid var(--bw-line); }
+html[data-bw-on] .pp-head b { flex: 1; font: 650 15px var(--bw-font); color: var(--bw-text); }
+html[data-bw-on][data-bw-look="pocket"] .pp-head { background: var(--bw-chrome-bg); border: 0; }
+html[data-bw-on][data-bw-look="pocket"] .pp-head b { color: var(--bw-chrome-fg); font: 700 12px var(--bw-font); text-transform: uppercase; letter-spacing: .11em; }
+html[data-bw-on][data-bw-look="pocket"] .pp-head .bw-key.ghost { color: var(--bw-chrome-fg); }
+html[data-bw-on] .pp-sec { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+html[data-bw-on] .pp-sec + .pp-sec { border-top: 1px solid var(--bw-line); }
+html[data-bw-on] .pp-h { display: flex; align-items: center; gap: 8px; font: 600 13px var(--bw-font); color: var(--bw-text3); }
+html[data-bw-on] .pp-row { display: flex; align-items: center; gap: 12px; }
+html[data-bw-on] .pp-row > div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+html[data-bw-on] .pp-row b { font: 600 14px var(--bw-font); color: var(--bw-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html[data-bw-on] .pp-row span { font-size: 12.5px; color: var(--bw-text3); }
+html[data-bw-on] .pp-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+html[data-bw-on] .pp-slots .bw-slot { grid-template-columns: 56px minmax(0, 1fr); }
+html[data-bw-on] .pp-slots .bw-slot .bw-tpv { height: 40px; }
+html[data-bw-on] .pp-due { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+html[data-bw-on] .pp-due a { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1px 10px; padding: 7px 8px; margin: 0 -8px; border-radius: 6px; text-decoration: none; }
+html[data-bw-on] .pp-due a b { font: 600 14px/1.3 var(--bw-font); color: var(--bw-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html[data-bw-on] .pp-due a span.pp-c { font-size: 12.5px; color: var(--bw-text3); grid-column: 1; }
+html[data-bw-on] .pp-due a .bw-tag { grid-column: 2; grid-row: 1 / 3; align-self: center; }
+@media (hover: hover) { html[data-bw-on] .pp-due a:hover { background: var(--bw-surface2); } }
+html[data-bw-on] .pp-foot { display: flex; gap: 8px; padding: 10px 14px 14px; border-top: 1px solid var(--bw-line); }
+
+/* ── options ── */
+html[data-bw-on] .op { max-width: 800px; margin: 0 auto; padding: 28px 16px 64px; }
+html[data-bw-on] .op-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+html[data-bw-on] .op-head h1 { margin: 0; font: 650 24px/1.2 var(--bw-font); color: var(--bw-text); letter-spacing: -.01em; }
+html[data-bw-on] .op-head .bw-logo { width: 34px; height: 34px; font-size: 18px; border-radius: 8px; }
+html[data-bw-on] .op-welcome { margin-bottom: 20px; }
+html[data-bw-on] .op-welcome ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; color: var(--bw-text2); }
+html[data-bw-on] .op-panel { background: var(--bw-surface); border-radius: var(--bw-r); box-shadow: var(--bw-card); overflow: clip; }
+html[data-bw-on] .op-panel .bw-set { max-width: none; }
+html[data-bw-on] .op-panel .bw-set-nav { background: var(--bw-surface); }
