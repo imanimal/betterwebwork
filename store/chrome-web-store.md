@@ -6,7 +6,7 @@ Before the first submission:
 
 - [ ] The GitHub repo `imanimal/betterwebwork` is public, so the privacy policy and homepage links below work.
 - [ ] A developer account is registered (one-time $5 fee).
-- [ ] 1 to 5 screenshots are taken (below).
+- [x] 1 to 5 screenshots are taken (below; they're in `store/screenshots/`).
 
 ## Package
 
@@ -55,7 +55,7 @@ BetterWebWork is an independent project. It isn't affiliated with WeBWorK, the M
 
 **Store icon:** `icons/icon-128.png`. Google suggests 96×96 artwork inside 16 px of transparent padding; this one fills the square, which the store accepts.
 
-**Screenshots:** 1280×800 (or 640×400), 1 to 5, square corners. Take them in Chrome with DevTools' device toolbar set to 1280×800, then **Capture screenshot** from the ⋮ menu. Use a page with no real classmate or instructor names, or the fixture pages (`python -m http.server 4799` in this folder, then `http://127.0.0.1:4799/tests/fixtures/webwork2/`) after replacing the name in the bar. In order:
+**Screenshots:** 1280×800 (or 640×400), 1 to 5, square corners. The five below are in `store/screenshots/`, numbered in this order; addons.mozilla.org takes the same files. They come from the fixture pages with MathJax added (the fixtures don't load WeBWorK's) and the instructor's login cut from the course title. To retake them, take them in Chrome with DevTools' device toolbar set to 1280×800, then **Capture screenshot** from the ⋮ menu. Use a page with no real classmate or instructor names, or the fixture pages (`python -m http.server 4799` in this folder, then `http://127.0.0.1:4799/tests/fixtures/webwork2/`) after replacing the name in the bar. In order:
 
 1. A problem after **Check answers**, with marks on the blanks and the results list (Paper).
 2. The same page in Paper Dark.
