@@ -167,6 +167,43 @@
     new ResizeObserver(() => { if (!fitting) fitting = requestAnimationFrame(fit); }).observe(c);
   }
 
+  // ── the problem's text: blanks stay with their labels, parts get room ──
+  /* PG writes a label and its blank as two inline things ("\(y(x) =\) [blank]"), so a line can end on the label and
+     leave the blank alone on the next; and old-style problems start part (2) after a bare <br>, flush against part (1).
+     Once MathJax has drawn the page: an inline equation right before a blank goes into one span.bw-glue with it (an
+     inline-block, see webwork.css), carried there so off() puts both back; and a line after a <br> that opens with a
+     part label ("(2)", "(b)", "1.", "Part 3", bold or not) gets a span.bw-gap before it, unless a blank line, a
+     paragraph or display maths already sits there. */
+  const blankText = (n) => n.nodeType === 8 || (n.nodeType === 3 && !n.data.trim());
+  function tidy() {
+    if (!swapped || !root.hasAttribute("data-bw-on")) return;
+    for (const sheet of $$(".problem-content")) {
+      const boxes = new Set();
+      for (const el of $$("input[type=text], input:not([type]), select, .mq-editable-field", sheet)) {
+        if (el.closest(".popover, .bw-glue") || (el.matches("input") && !el.closest(".mv-container") && !el.getClientRects().length)) continue;
+        boxes.add(el.closest(".mv-container, .mq-editable-field") || el);
+      }
+      for (const box of boxes) {
+        // back over spaces and hidden fields (PG's previous_ answers, MathQuill's source input) to the label
+        const between = [];
+        let p = box.previousSibling;
+        while (p && (blankText(p) || (p.nodeType === 1 && p.nodeName !== "MJX-CONTAINER" && !p.getClientRects().length))) { between.unshift(p); p = p.previousSibling; }
+        if (!p || p.nodeName !== "MJX-CONTAINER" || p.getAttribute("display") === "true") continue;
+        const g = mk('<span class="bw-glue"></span>');
+        p.before(g); carry([p, ...between, box], g);
+      }
+      for (const br of $$("br", sheet)) {
+        if (br.closest(".popover")) continue;
+        let n = br.nextSibling, p = br.previousSibling;
+        while (n && blankText(n)) n = n.nextSibling;
+        while (p && blankText(p)) p = p.previousSibling;
+        const text = !n ? "" : n.nodeType === 3 ? n.data : /^(B|STRONG)$/.test(n.nodeName) ? n.textContent : "";
+        if (!ww.part(text) || !p || p.nodeName === "BR" || (p.nodeType === 1 && !getComputedStyle(p).display.startsWith("inline"))) continue;
+        br.after(mk('<span class="bw-gap" aria-hidden="true"></span>'));
+      }
+    }
+  }
+
   // ── a problem ──
   const P = {};
   function problem() {
@@ -189,6 +226,7 @@
     historyLog();
     again();
     drafts();
+    maths().then(tidy).catch((e) => console.error("BetterWebWork:", e));
   }
 
   function head(nv) {
@@ -281,6 +319,11 @@
     (document.head || root).append(s);
   }));
   const typeset = () => inPage().then(() => document.dispatchEvent(new CustomEvent("bww-typeset")));
+  /** Resolves once WeBWorK's MathJax has drawn the page, as page.js hears it (or after 5 s, whatever's drawn by then). */
+  const maths = () => inPage().then(() => new Promise((done) => {
+    document.addEventListener("bww-maths-done", done, { once: true }); setTimeout(done, 5000);
+    document.dispatchEvent(new CustomEvent("bww-maths"));
+  }));
   /** HTML from WeBWorK 2.19's popovers, without anything that runs (MathJax's math/tex scripts stay). */
   function clean(html) {
     const d = new DOMParser().parseFromString(`<body>${html}</body>`, "text/html");

@@ -10,6 +10,7 @@ It works on any WeBWorK whose address has `/webwork2/` in it (built against 2.18
 
 - One bar on top: the course, the set and the problem as breadcrumbs, then settings and log out. WeBWorK's sidebar becomes a menu you open when you need it.
 - The problem is centered on a single sheet. An equation wider than the sheet widens it instead of scrolling (only one wider than the window scrolls). Graphs get a light panel on dark themes so their lines stay visible.
+- A blank stays on the same line as the maths that labels it (`y(x) =` and its box wrap together), and a part that starts on a new line, like "(2) The unique solution…", gets a little room above it. The Equation Editor opens over the page, never cut off inside the sheet.
 - The set's problems sit in a strip above the sheet, each marked correct, partly correct, wrong or not started. `[` and `]` move between them.
 - Score, attempts, attempts left and the due date sit in one row instead of a paragraph.
 - After you check or submit, each blank gets a mark beside it. The results list shows what you typed, how WeBWorK read it, WeBWorK's own message, and short notes on common slips: `e^-2x` read as `(e^-2)·x`, `sin x` without parentheses, `x^1/2`, unbalanced brackets, symbols WeBWorK doesn't take, rounding too early. The notes are labeled as BetterWebWork's, not WeBWorK's, and stay quiet when there's nothing certain to say.

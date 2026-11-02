@@ -7,7 +7,7 @@
    ProblemSet (set_status's .alert-info, table.problem_set_table) and ProblemSets (the set list). WeBWorK 2.19 swapped
    the attempts table for a feedback button beside each answer (.ww-feedback-btn, its popover in data-bs-content);
    results() reads both. Sentences (score summary, set status) are read in English; anything that doesn't match is
-   left on the page as WeBWorK wrote it. The text parsers (route, code, quarter, date, setStatus, setAlert, score) are
+   left on the page as WeBWorK wrote it. The text parsers (route, code, quarter, date, setStatus, setAlert, score, part) are
    pure and tested in tests/core.test.js; the rest read the DOM. */
 (function (g) {
   const BW = (g.BW = g.BW || {});
@@ -122,6 +122,9 @@
     out.known = out.attempts != null || out.remaining != null || out.overall != null;
     return out;
   }
+
+  /** Whether a line of problem text opens with a part label: "(2)", "(b)", "(iv)", "b)", "1.", "Part 3:", "Part (a)". */
+  const part = (text) => /^\s*(?:part\s+\(?(?:[a-z]|\d{1,2}|[ivx]{1,4})\)?|\((?:[a-z]|\d{1,2}|[ivx]{1,4})\)|(?:[a-z]|\d{1,2})[.)])(?=[\s:.]|$)/i.test(String(text || ""));
 
   // ── DOM readers ──
 
@@ -333,5 +336,5 @@
   /** Two answers that are the same as typed, give or take spaces. */
   const same = (a, b) => String(a || "").replace(/\s+/g, "") === String(b || "").replace(/\s+/g, "");
 
-  BW.ww = { route, code, quarter, date, setStatus, setAlert, score, answerIds, answerEl, results, nav, siblings, problemTable, setList, who, crumbs, same, txt };
+  BW.ww = { route, code, quarter, date, setStatus, setAlert, score, part, answerIds, answerEl, results, nav, siblings, problemTable, setList, who, crumbs, same, txt };
 })(globalThis);

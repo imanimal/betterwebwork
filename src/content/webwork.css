@@ -272,6 +272,10 @@ html[data-bw-on] .problem-content img { max-width: 100%; height: auto !important
 html[data-bw-on] .problem-content img.bw-figure, html[data-bw-on] .problem-content .image-view-elt.bw-figure { display: block; margin: 14px auto !important; }
 html[data-bw-on] .problem-content mjx-container { color: inherit; }
 html[data-bw-on] .problem-content mjx-container[display="true"] { margin: 1em 0 !important; padding: 2px 0; }
+/* tidy() in app.js: a blank and the inline maths that labels it share a line (still wrapping inside when the pair is
+   wider than the column), and a part that starts after a bare line break ("(2) The unique…") gets room above it */
+html[data-bw-on] .problem-content .bw-glue { display: inline-block; max-width: 100%; }
+html[data-bw-on] .problem-content .bw-gap { display: block; height: .75em; }
 html[data-bw-on] .problem-content .pg-table, html[data-bw-on] .problem-content table[border]:not([border="0"]) { margin: 1em auto; border-collapse: collapse; }
 html[data-bw-on] .problem-content .pg-table :is(td, th), html[data-bw-on] .problem-content table[border]:not([border="0"]) :is(td, th) { border: 1px solid var(--bw-line2) !important; padding: 6px 12px !important; }
 html[data-bw-on] .problem-content .pg-table th { background: var(--bw-surface2); color: var(--bw-text); font-weight: 650; }
@@ -286,7 +290,7 @@ html[data-bw-on][data-bw-scheme="dark"] .problem-content canvas, html[data-bw-on
 /* answer fields: a monospace that tells 0 from O and 1 from l, sized to read */
 html[data-bw-on] .problem-content :is(input[type=text], input:not([type]), textarea, select) {
   font: 400 calc(16px * var(--bw-pz)) / 1.3 var(--bw-mono) !important; color: var(--bw-text) !important; background: var(--bw-bg2) !important;
-  border: 1px solid var(--bw-line2) !important; border-radius: 6px !important; height: auto !important; min-height: 38px; padding: 6px 10px !important; margin: 3px 2px !important;
+  border: 1px solid var(--bw-line2) !important; border-radius: 6px !important; height: auto !important; min-height: 38px; padding: 6px 10px !important; margin: 3px 4px !important;
   box-shadow: none !important; vertical-align: middle !important; max-width: 100%; transition: border-color calc(var(--bw-m) * 120ms), box-shadow calc(var(--bw-m) * 120ms);
 }
 html[data-bw-on] .problem-content select { padding-right: 28px !important; cursor: pointer; }
@@ -310,9 +314,12 @@ html[data-bw-on] :is(.mq-latex-editor-container, .quill-toolbar, .mq-toolbar) { 
 /* MathView answer boxes. PG wraps the input in div.mv-container.input-group, puts button.codeshard-btn (the Equation
    Editor) after it and the editor's popover inside the same div. The wrapper is drawn as the field, the button as a
    small key set into its right end (the sigma from icons.js in place of Font Awesome's grid), and the focus and
-   right/wrong rings move from the input to the wrapper so they frame the box and its key together. */
+   right/wrong rings move from the input to the wrapper so they frame the box and its key together. The wrapper is
+   static (Bootstrap's .input-group is relative), so the popover, which Popper places absolutely, takes its containing
+   block from outside the sheet: the sheet's sideways scroll (overflow-x above) can't clip it or scroll to it, and
+   Popper flips it against the window instead of the sheet. */
 html[data-bw-on] .problem-content .mv-container.input-group {
-  align-items: center; vertical-align: middle; min-height: 38px; margin: 3px 2px; padding-right: 4px;
+  position: static; align-items: center; vertical-align: middle; min-height: 38px; margin: 3px 4px; padding-right: 4px;
   background: var(--bw-bg2); border: 1px solid var(--bw-line2); border-radius: 6px;
   transition: border-color calc(var(--bw-m) * 120ms), box-shadow calc(var(--bw-m) * 120ms);
 }

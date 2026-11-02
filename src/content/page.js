@@ -4,6 +4,7 @@
                     with WeBWorK's own MathJax
      "bww-quill"    redraw each MathQuill box whose LaTeX field app.js marked [data-bw-quill] (a draft put back) from
                     that field, through WeBWorK's window.answerQuills, and mark the field "ok" when it could
+     "bww-maths"    answer "bww-maths-done" once WeBWorK's MathJax has drawn the page (at once when there's none)
    It sends nothing anywhere. */
 (function () {
   function typeset() {
@@ -22,6 +23,14 @@
       } catch (e) { /* stays unmarked: app.js puts WeBWorK's answer back */ }
     }
   }
+  function maths() {
+    const MJ = window.MathJax, done = () => document.dispatchEvent(new CustomEvent("bww-maths-done"));
+    // MathJax's startup promise settles after its first typeset; before its script has run, only the config is there
+    if (MJ && MJ.startup && MJ.startup.promise) MJ.startup.promise.then(done, done);
+    else if (MJ && document.readyState !== "complete") window.addEventListener("load", maths, { once: true });
+    else done();
+  }
   document.addEventListener("bww-typeset", typeset);
   document.addEventListener("bww-quill", quill);
+  document.addEventListener("bww-maths", maths);
 })();

@@ -131,6 +131,11 @@ test("score lines", () => {
   assert.equal(ww.score("").known, false);
 });
 
+test("part labels at the start of a line", () => {
+  for (const s of ["(1) Let C1", " (2)", "(b) Find", "(iv) Show", "b) Find", "1. Find", "12. Then", "Part 3: Find", "Part (a)", "part b."]) assert.equal(ww.part(s), true, s);
+  for (const s of ["a function", "(x+1) is", "(1, 2)", "3.5 is", "For −∞ type -inf", "Partial credit", "", null]) assert.equal(ww.part(s), false, String(s));
+});
+
 test("due dates in words", () => {
   const now = new Date(2026, 10, 2, 12, 0).getTime();
   assert.deepEqual([u.due(now + 2 * u.HR, now).t, u.due(now + 2 * u.HR, now).c], ["in 2h", "hot"]);
