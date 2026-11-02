@@ -70,7 +70,7 @@
     for (const k of ["theme", "nightTheme", "night", "nightFrom", "nightTo", "type", "width", "img", "motion", "zoom", "sticky"]) s[k] = S[k];
     BW.boot.write({ off: !!S.off[R.host], s, themes: DATA.themes.filter((t) => t.id === S.theme || t.id === S.nightTheme) });
   }
-  function off() { if (P.ui) destroyResults(); unswap(); if (root.hasAttribute("data-bw-on")) T.unlook(root); cache(); }
+  function off() { if (P.ui) destroyResults(); unswap(); if (root.hasAttribute("data-bw-on")) T.unlook(root); root.style.removeProperty("--bw-fit"); cache(); }
 
   async function refresh() {
     DATA = await BW.store.all(); S = DATA.settings; u.setClock24(S.clock24);
@@ -97,6 +97,7 @@
         else if (PAGE === "set") setPage();
         else if (PAGE === "course") course();
         else if (PAGE === "courses") courses();
+        fitMaths();
       } catch (e) { console.error("BetterWebWork:", e); }
       keys();
     }
@@ -135,6 +136,35 @@
       if (!scrim) { const s = mk('<div class="bw-scrim bw-navscrim bw-ui"></div>'); s.addEventListener("click", () => menu(false)); document.body.append(s); }
       const f = $("a[href], button", nav); if (f) f.focus();
     } else { if (scrim) scrim.remove(); if (key) key.focus(); }
+  }
+
+  // ── wide maths: the column grows to fit it ──
+  /* MathJax 3 doesn't break lines, so an equation (or a table of them) can be wider than the reading column. Rather
+     than scroll it, the column widens by what the widest one needs (--bw-fit in webwork.css), up to the window; only
+     past that does the sheet or a results row scroll. It's measured from the column at its set width every time, so
+     a resize, MathJax's typesetting or a new text size gives one answer and the observer settles at once. */
+  let fitting = 0;
+  function fit() {
+    fitting = 0;
+    root.style.removeProperty("--bw-fit");
+    if (!root.hasAttribute("data-bw-on")) return;
+    let extra = 0;
+    for (const s of $$(".problem-content")) {
+      const r = s.getBoundingClientRect(), edge = r.left + s.clientLeft + s.clientWidth - parseFloat(getComputedStyle(s).paddingRight);
+      for (const el of $$("mjx-container, table, pre, img, canvas", s)) {
+        if (el.closest(".popover, .dropdown-menu")) continue; // MathView's editor floats over the page
+        const e = el.getBoundingClientRect();
+        extra = Math.max(extra, e.left + Math.max(e.width, el.scrollWidth) + s.scrollLeft - edge);
+      }
+    }
+    for (const v of $$(".bw-pv")) extra = Math.max(extra, v.scrollWidth - v.clientWidth);
+    const col = $(".problem-content, .bw-results"), row = col && col.closest("#content > *");
+    if (extra > 1 && row) root.style.setProperty("--bw-fit", `${Math.ceil(row.getBoundingClientRect().width + extra)}px`);
+  }
+  function fitMaths() {
+    const c = $("#content");
+    if (!c || !$(".problem-content") || typeof ResizeObserver !== "function") return;
+    new ResizeObserver(() => { if (!fitting) fitting = requestAnimationFrame(fit); }).observe(c);
   }
 
   // ── a problem ──

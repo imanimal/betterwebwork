@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "BetterWebWork",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A cleaner WeBWorK: centered problems, one-click navigation, plain-language answer feedback, saved drafts, dark mode and themes.",
   "homepage_url": "https://github.com/imanimal/betterwebwork",
   "author": "imanimal",

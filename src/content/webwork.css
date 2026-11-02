@@ -41,10 +41,11 @@ html[data-bw-on] body :focus-visible { outline: 2px solid var(--bw-accent) !impo
 html[data-bw-on] .masthead, html[data-bw-on] #breadcrumb-row, html[data-bw-on] #toggle-sidebar, html[data-bw-on] #footer, html[data-bw-on] .sidebar-backdrop { display: none !important; }
 html[data-bw-on] body.no-scroll { overflow: auto !important; height: auto !important; }
 html[data-bw-on] #content {
-  margin: 0 !important; width: auto !important; max-width: none; padding: 24px clamp(16px, 4vw, 40px) 72px; transition: none !important;
+  margin: 0 !important; width: auto !important; max-width: none; min-width: 0; padding: 24px clamp(16px, 4vw, 40px) 72px; transition: none !important;
 }
 html[data-bw-on] #content [id] { scroll-margin-top: calc(var(--bw-barh) + 12px); }
-html[data-bw-on] #content > * { max-width: var(--bw-measure); margin-left: auto !important; margin-right: auto !important; }
+/* --bw-fit (fit() in app.js): what the widest equation on a problem page needs, when that's more than the measure */
+html[data-bw-on] #content > * { max-width: max(var(--bw-measure), var(--bw-fit, 0px)); margin-left: auto !important; margin-right: auto !important; }
 html[data-bw-on] #content > .row { --bs-gutter-x: 0; }
 html[data-bw-on] #content > .row > [class*="col-"] { flex: 0 0 100%; max-width: 100%; width: 100%; }
 html[data-bw-on] #content .row > .col-lg-10 { flex: 0 0 100%; max-width: 100%; }
@@ -254,7 +255,8 @@ html[data-bw-on][data-bw-look="pocket"] .bw-pk.cur .bw-st { color: var(--bw-acce
   html[data-bw-on][data-bw-look="pocket"] .bw-pk.cur .bw-st { color: var(--bw-accent); }
 }
 
-/* the problem itself: one sheet, the reading column centred, text at a size you set */
+/* the problem itself: one sheet, the reading column centred, text at a size you set; an equation wider than the
+   column widens it (fit() in app.js) instead of scrolling, and only one wider than the window scrolls the sheet */
 html[data-bw-on] .problem-content {
   background: var(--bw-surface) !important; border: 0 !important; box-shadow: var(--bw-card) !important; border-radius: var(--bw-r) !important;
   padding: clamp(18px, 3.2vw, 34px) clamp(16px, 3.6vw, 40px) !important; margin: 0 0 16px !important; min-height: 0 !important;
@@ -269,7 +271,7 @@ html[data-bw-on] .problem-content hr { margin: 1.25em 0; }
 html[data-bw-on] .problem-content img { max-width: 100%; height: auto !important; vertical-align: middle; }
 html[data-bw-on] .problem-content img.bw-figure, html[data-bw-on] .problem-content .image-view-elt.bw-figure { display: block; margin: 14px auto !important; }
 html[data-bw-on] .problem-content mjx-container { color: inherit; }
-html[data-bw-on] .problem-content mjx-container[display="true"] { margin: 1em 0 !important; overflow-x: auto; overflow-y: hidden; padding: 2px 0; }
+html[data-bw-on] .problem-content mjx-container[display="true"] { margin: 1em 0 !important; padding: 2px 0; }
 html[data-bw-on] .problem-content .pg-table, html[data-bw-on] .problem-content table[border]:not([border="0"]) { margin: 1em auto; border-collapse: collapse; }
 html[data-bw-on] .problem-content .pg-table :is(td, th), html[data-bw-on] .problem-content table[border]:not([border="0"]) :is(td, th) { border: 1px solid var(--bw-line2) !important; padding: 6px 12px !important; }
 html[data-bw-on] .problem-content .pg-table th { background: var(--bw-surface2); color: var(--bw-text); font-weight: 650; }
