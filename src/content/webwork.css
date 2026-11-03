@@ -397,6 +397,7 @@ html[data-bw-on] .ww-feedback-btn.bw-hidden + .bw-fb { margin-left: 6px; }
 /* results above the problem: what WeBWorK said, with how it read each answer */
 html[data-bw-on] .bw-results { margin: 0 0 16px; }
 html[data-bw-on] .bw-results .bw-band .bw-tag { margin-left: 2px; }
+html[data-bw-on]:not([data-bw-look="pocket"]) .bw-results.all-ok .bw-bt .bw-i { color: var(--bw-ok); }
 html[data-bw-on] .bw-parts { list-style: none; margin: 0; padding: 4px 0; }
 html[data-bw-on] .bw-part { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 4px 10px; padding: 12px 16px; }
 html[data-bw-on] .bw-part + .bw-part { border-top: 1px solid color-mix(in srgb, var(--bw-line) 70%, transparent); }

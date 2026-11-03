@@ -218,6 +218,7 @@
     head(ww.nav(document));
     if (sib.length > 1) rail(sib);
     stats();
+    notes();
     const pb = $("#problem_body");
     if (pb) pb.before(mk(`<div class="bw-sheetband bw-ui">${ic("note")}<span>Problem ${esc(P.n)}</span><span>${esc(P.pts || "")}</span></div>`));
     if (S.feedback) buildResults();
@@ -304,10 +305,19 @@
     if (!items.length) return;
     // the sentences that didn't become numbers stay, as words
     const box = $("#score_summary"), KNOWN = /attempted this problem|score of \d+\s*% for this attempt|overall recorded score|attempts? remaining|homework set is closed/i;
-    const rest = box ? ww.txt(box).split(/(?<=\.)\s+/).filter((s) => s && !KNOWN.test(s)).join(" ") : "";
+    const rest = box ? ww.txt(box).split(/(?<=\.)\s+/).filter((s) => s && !KNOWN.test(s) && !(done() && PARTIAL.test(s))).join(" ") : "";
     const el = mk(`<div class="bw-stats bw-ui">${items.join("")}${rest ? `<span class="bw-snote">${esc(rest)}</span>` : ""}</div>`);
     if (P.head) P.head.after(el); else P.form.before(el);
     if (sc.known) hide(box);
+  }
+
+  // PG's grader says "You can earn partial credit on this problem." under every problem with more than one blank, and
+  // WeBWorK keeps saying it (as a Note under the problem) after you've earned all of it
+  const PARTIAL = /^(?:Note:\s*)?You can earn partial credit on this problem\.?$/i;
+  const done = () => P.sc.overall != null && P.sc.overall >= 100;
+  function notes() {
+    if (!done()) return;
+    for (const p of $$(".problem > p", P.form)) if (PARTIAL.test(ww.txt(p))) hide(p);
   }
 
   // results: one panel above the problem, a mark beside each blank
@@ -331,7 +341,8 @@
     for (const n of d.querySelectorAll("*")) for (const a of [...n.attributes]) if (/^on/i.test(a.name) || (/(href|src|action)$/i.test(a.name) && /^\s*javascript:/i.test(a.value))) n.removeAttribute(a.name);
     const f = document.createDocumentFragment(); f.append(...d.body.childNodes); return f;
   }
-  const partWord = (p, kind) => (p.result === "part" ? `${p.pct}% correct` : WORD[p.result] || (kind === "preview" ? "Not checked" : "No result"));
+  // kept: WeBWorK graded the answers but says only whether all of them are right (the problem keeps which to itself)
+  const partWord = (p, kind, kept) => (p.result === "part" ? `${p.pct}% correct` : WORD[p.result] || (kind === "preview" ? "Not checked" : kept ? "" : "No result"));
   const partName = (p, many) => (many ? `Answer ${p.n}` : "Your answer");
 
   function buildResults() {
@@ -339,25 +350,29 @@
     const ui = { moved: [], hidden: [], chips: [] };
     const move = (nodes, into) => { for (const n of nodes) ui.moved.push({ n, parent: n.parentNode, next: n.nextSibling }); into.append(...nodes); };
     const kind = res.kind, many = res.parts.length > 1, graded = res.parts.filter((p) => p.result && p.result !== "essay");
-    const nOk = graded.filter((p) => p.result === "ok").length, allOk = graded.length > 0 && nOk === graded.length;
+    // a submit on a problem that marks no answer on its own: WeBWorK's summary is the whole result
+    const kept = kind !== "preview" && !res.parts.some((p) => p.result) && (res.summary === "ok" || res.summary === "bad");
+    const nOk = graded.filter((p) => p.result === "ok").length, allOk = kept ? res.summary === "ok" : graded.length > 0 && nOk === graded.length;
     const head = res.rejected ? "Attempt not accepted" : kind === "preview" ? "Preview" : allOk ? (many ? "All correct" : "Correct")
+      : kept ? (many ? "Not all correct" : "Not correct")
       : graded.length ? (many ? `${nOk} of ${graded.length} correct` : partWord(graded[0], kind)) : "Results";
     const tag = kind === "check" ? '<span class="bw-tag quiet">Not recorded</span>'
       : kind === "submit" && P.sc.recorded === true ? '<span class="bw-tag quiet">Recorded</span>'
       : kind === "submit" && P.sc.recorded === false ? '<span class="bw-tag bad">Not recorded</span>' : "";
     const foot = kind === "preview" ? "Nothing was checked or recorded. This is how WeBWorK reads what you typed."
-      : kind === "check" ? "Checking doesn't use an attempt."
-      : P.sc.thisScore != null ? `This attempt scored ${P.sc.thisScore}%${P.sc.overall != null ? `; your recorded score is ${P.sc.overall}%` : ""}.` : "";
-    const el = mk(`<section class="bw-mod bw-results bw-ui ${kind || ""}" aria-label="Answer results">
+      : [kept && many ? "This problem doesn't say which answers are right, only whether they all are." : "",
+        kind === "check" ? "Checking doesn't use an attempt."
+        : P.sc.thisScore != null ? `This attempt scored ${P.sc.thisScore}%${P.sc.overall != null ? `; your recorded score is ${P.sc.overall}%` : ""}.` : ""].filter(Boolean).join(" ");
+    const el = mk(`<section class="bw-mod bw-results bw-ui ${kind || ""}${allOk && !res.rejected ? " all-ok" : ""}" aria-label="Answer results">
       <div class="bw-band"><span class="bw-bt">${ic(kind === "preview" ? "eye" : res.rejected ? "warn" : allOk ? "check" : "grade")}${esc(head)}</span>${tag}<span class="bw-sp"></span></div>
       <ol class="bw-parts"></ol>${foot ? `<div class="bw-rfoot">${esc(foot)}</div>` : ""}</section>`);
     const list = el.querySelector(".bw-parts");
     let math = false;
     res.parts.forEach((p, i) => {
-      const r = p.result || "none", word = partWord(p, kind);
+      const r = p.result || "none", word = partWord(p, kind, kept);
       const li = K.el(`<li class="bw-part ${r}" id="bw-part-${i}" tabindex="-1">
         <span class="bw-pi">${ic(ICON[r] || "ring", "sm")}</span>
-        <div class="bw-ph2"><button type="button" class="bw-pn" data-i="${i}" title="Go to this blank">${esc(partName(p, many))}</button><span class="bw-pr">${esc(word)}</span></div>
+        <div class="bw-ph2"><button type="button" class="bw-pn" data-i="${i}" title="Go to this blank">${esc(partName(p, many))}</button>${word ? `<span class="bw-pr">${esc(word)}</span>` : ""}</div>
         <div class="bw-pbody"><div class="bw-pgrid"></div></div></li>`);
       const grid = li.querySelector(".bw-pgrid"), body = li.querySelector(".bw-pbody");
       const row = (label) => { grid.append(u.frag(`<span class="bw-pl">${esc(label)}</span><span class="bw-pv"></span>`)); return grid.lastElementChild; };
@@ -388,7 +403,7 @@
     const sum = $("#output_summary");
     if (sum) {
       for (const t of $$("table.attemptResults, .attemptResultsHeader, .attemptResultsSummary", sum)) { const x = t.closest(".table-responsive") || t; hide(x); ui.hidden.push(x); }
-      for (const x of $$(".ResultsWithError", sum)) if (/PREVIEW ONLY|ONLY CHECKED|NOT ACCEPTED/i.test(x.textContent)) { hide(x); ui.hidden.push(x); }
+      for (const x of $$(":scope > .ResultsWithError, :scope > .alert-danger", sum)) if (/PREVIEW ONLY|ONLY CHECKED|NOT ACCEPTED/i.test(x.textContent)) { hide(x); ui.hidden.push(x); }
       sum.prepend(el);
     } else ($(".problem", P.form) || P.form).before(el);
     ui.el = el; P.ui = ui;

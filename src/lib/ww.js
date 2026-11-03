@@ -165,17 +165,39 @@
   }
 
   /**
-   * This page's answer results: { v: "2.18" | "2.19" | null, kind: submit | check | preview | null, parts }.
+   * What a results page is: preview | check | submit. The banner (read in English) says preview or check; a submit has
+   * none. Without one, a page is a submit when any answer has its own mark or the summary under the answers is there
+   * (a preview never has the summary). A problem can keep which answers are right to itself (PG's
+   * showPartialCorrectAnswers = 0): its submit has no marks, only the summary, and is still a submit.
+   */
+  function kind(banner, marked, summary) {
+    if (/PREVIEW ONLY/i.test(banner)) return "preview";
+    if (/ONLY CHECKED/i.test(banner)) return "check";
+    return marked || summary ? "submit" : "preview";
+  }
+
+  /** The summary under the answers (2.18's .attemptResultsSummary, 2.19's alert after "Results for this submission"):
+      "bad" when it says an answer isn't right, "ok" when all are, "none" when neither (blanks, graded later), null when
+      there isn't one. */
+  function summary(sum) {
+    const box = sum && sum.querySelector('[role="alert"]');
+    if (!box) return null;
+    return box.querySelector(".ResultsWithError, .alert-danger") ? "bad" : box.querySelector(".ResultsWithoutError, .alert-success") ? "ok" : "none";
+  }
+
+  /**
+   * This page's answer results: { v: "2.18" | "2.19" | null, kind: submit | check | preview | null, summary, parts }.
    * A part: { id, n, entered, runs, previewEl | previewHtml, result: ok | bad | part | essay | null, pct, message,
    * messageEl | messageHtml, correctEl | correctHtml, correctText }. Elements are WeBWorK's own (the app moves them).
    */
   function results(doc) {
     const out = { v: null, kind: null, parts: [] };
     const sum = doc.getElementById("output_summary");
-    const banner = sum ? [...sum.querySelectorAll(".ResultsWithError")].map(txt).join(" ") : "";
-    if (/PREVIEW ONLY/i.test(banner)) out.kind = "preview";
-    else if (/ONLY CHECKED/i.test(banner)) out.kind = "check";
+    // 2.18 draws the banners as .ResultsWithError, 2.19 as .alert-danger
+    const banner = sum ? [...sum.querySelectorAll(":scope > .ResultsWithError, :scope > .alert-danger")].map(txt).join(" ") : "";
+    if (/PREVIEW ONLY|ONLY CHECKED/i.test(banner)) out.kind = kind(banner);
     out.rejected = /NOT ACCEPTED/i.test(banner);
+    out.summary = summary(sum);
     const form = doc.getElementById("problemMainForm") || doc;
     const ids = answerIds(form);
 
@@ -244,10 +266,9 @@
           if (p.entered == null) { const el = answerEl(form, p.id); p.entered = el && "value" in el ? el.value : ""; }
           out.parts.push(p);
         });
-        if (!out.kind) out.kind = out.parts.every((p) => p.result == null) ? "preview" : null;
       }
     }
-    if (out.parts.length && !out.kind) out.kind = out.parts.some((p) => p.result) ? "submit" : "preview";
+    if (out.parts.length && !out.kind) out.kind = kind(banner, out.parts.some((p) => p.result), out.summary != null);
     return out;
   }
 
@@ -336,5 +357,5 @@
   /** Two answers that are the same as typed, give or take spaces. */
   const same = (a, b) => String(a || "").replace(/\s+/g, "") === String(b || "").replace(/\s+/g, "");
 
-  BW.ww = { route, code, quarter, date, setStatus, setAlert, score, part, answerIds, answerEl, results, nav, siblings, problemTable, setList, who, crumbs, same, txt };
+  BW.ww = { route, code, quarter, date, setStatus, setAlert, score, part, kind, answerIds, answerEl, results, nav, siblings, problemTable, setList, who, crumbs, same, txt };
 })(globalThis);
