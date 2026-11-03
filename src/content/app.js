@@ -11,7 +11,8 @@
      courses  a filter, the courses you opened first, then the rest by quarter
      login    a plain card
    WeBWorK's nodes are hidden (.bw-hidden) or moved, never deleted, and every form posts exactly as WeBWorK wrote it.
-   Everything we add carries data-bw-x (see webwork.css). Only the top frame gets the bar and the page changes. */
+   Everything we add carries data-bw-x (see webwork.css), except the span that keeps a blank with its label, which
+   stays when we're off (tidy() says why). Only the top frame gets the bar and the page changes. */
 (function () {
   const BW = globalThis.BW, api = BW.api, u = BW.u, ww = BW.ww, T = BW.themes, K = BW.kit, esc = u.esc;
   const root = document.documentElement;
@@ -171,10 +172,28 @@
   /* PG writes a label and its blank as two inline things ("\(y(x) =\) [blank]"), so a line can end on the label and
      leave the blank alone on the next; and old-style problems start part (2) after a bare <br>, flush against part (1).
      Once MathJax has drawn the page: an inline equation right before a blank goes into one span.bw-glue with it (an
-     inline-block, see webwork.css), carried there so off() puts both back; and a line after a <br> that opens with a
-     part label ("(2)", "(b)", "1.", "Part 3", bold or not) gets a span.bw-gap before it, unless a blank line, a
-     paragraph or display maths already sits there. */
+     inline-block, see webwork.css); and a line after a <br> that opens with a part label ("(2)", "(b)", "1.", "Part 3",
+     bold or not) gets a span.bw-gap before it, unless a blank line, a paragraph or display maths already sits there.
+     PG's scripts watch the page and set up again whatever turns up inside an added element. MathView, the Equation
+     Editor, wraps every .codeshard it finds that way in a new div.mv-container without asking if it has one, and the
+     new div is itself added, so moving an answer's editor in the page nests editors without end. So the glue is filled
+     while it's out of the page and goes in as one element marked data-mv-initialized, the one thing MathView's observer
+     skips (the other observers find nothing in it to set up; MathQuill's checks its own mark). For the same reason the
+     glue stays when BetterWebWork is off: putting the editor back would start it again, and nothing styles the span
+     then (it has no data-bw-x, which hides what we add), so it's an ordinary inline span and the line is WeBWorK's. */
   const blankText = (n) => n.nodeType === 8 || (n.nodeType === 3 && !n.data.trim());
+  function glue(nodes) {
+    const last = nodes[nodes.length - 1], parent = last.parentNode, next = last.nextSibling;
+    const focused = document.activeElement, keep = focused && nodes.some((n) => n.contains(focused)) ? focused : null;
+    let range = null;
+    try { if (keep && keep.selectionStart != null) range = [keep.selectionStart, keep.selectionEnd, keep.selectionDirection]; } catch (e) { /* no selection on this kind of field */ }
+    const g = document.createElement("span");
+    g.className = "bw-glue"; g.dataset.mvInitialized = "true";
+    g.append(...nodes);
+    parent.insertBefore(g, next);
+    // taking a field out of the page drops its focus: give it back, with the caret where it was
+    if (keep) { keep.focus({ preventScroll: true }); if (range) try { keep.setSelectionRange(...range); } catch (e) { /* not a text field */ } }
+  }
   function tidy() {
     if (!swapped || !root.hasAttribute("data-bw-on")) return;
     for (const sheet of $$(".problem-content")) {
@@ -189,8 +208,7 @@
         let p = box.previousSibling;
         while (p && (blankText(p) || (p.nodeType === 1 && p.nodeName !== "MJX-CONTAINER" && !p.getClientRects().length))) { between.unshift(p); p = p.previousSibling; }
         if (!p || p.nodeName !== "MJX-CONTAINER" || p.getAttribute("display") === "true") continue;
-        const g = mk('<span class="bw-glue"></span>');
-        p.before(g); carry([p, ...between, box], g);
+        glue([p, ...between, box]);
       }
       for (const br of $$("br", sheet)) {
         if (br.closest(".popover")) continue;

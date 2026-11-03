@@ -11,7 +11,8 @@ the extension's scripts in the order the manifest injects them and tests/fixture
     http://127.0.0.1:4799/tests/fixtures/webwork2/math4a-01-f26-blee/Week_1/4/  the next problem, opened fresh
 
 The markup follows WeBWorK's templates (system.html.ep, Problem.html.ep, AttemptsTable.pm, ProblemSet, ProblemSets);
-MathJax isn't loaded, so maths shows as TeX; tests/fixtures/mathview.js stands in for PG's MathView on answers (a) and (b). Keep the script lists in step with manifest.json."""
+tests/fixtures/mathjax.js stands in for MathJax (maths shows as TeX, in the mjx-container elements MathJax makes);
+tests/fixtures/mathview.js stands in for PG's MathView on answers (a) and (b), page watcher included. Keep the script lists in step with manifest.json."""
 import json
 import os
 
@@ -53,6 +54,7 @@ def page(title, crumbs, body, nav="", sidebar=True, info=None, problem_nav=""):
 <!-- BetterWebWork at document_start -->
 {css}
 <script src="/tests/fixtures/shim.js"></script>
+<script src="/tests/fixtures/mathjax.js"></script>
 {js_start}
 <title>WeBWorK : {title}</title>
 </head>
