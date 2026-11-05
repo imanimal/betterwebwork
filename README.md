@@ -127,7 +127,7 @@ Edge Add-ons isn't automated: upload the same `-chrome.zip` in Partner Center by
 
 Chrome Web Store:
 
-1. Upload the first version by hand. The API only updates an item that already exists. In the [Developer Dashboard](https://chrome.google.com/webstore/devconsole/), add a new item, upload `dist/betterwebwork-<version>-chrome.zip`, fill in the Store listing and Privacy tabs from [store/chrome-web-store.md](store/chrome-web-store.md), and submit it for review.
+1. The item has to exist first, because the API only updates an item. BetterWebWork's first version (0.1.3) was uploaded by hand, with the Store listing and Privacy tabs filled in from [store/chrome-web-store.md](store/chrome-web-store.md). Each later tag needs a higher version than the store has. A version still in review can block a new submission, so tag the next one after that review ends.
 2. Turn on 2-step verification for the Google account. Google requires it to publish.
 3. In the [Google Cloud console](https://console.cloud.google.com/), create or pick a project, search for "Chrome Web Store API" and enable it.
 4. In [IAM & Admin > Service accounts](https://console.cloud.google.com/iam-admin/serviceaccounts), create a service account. It needs no roles. Open it, go to **Keys > Add key > Create new key > JSON**, and keep the downloaded file for step 7.
