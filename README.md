@@ -54,7 +54,7 @@ BetterWebWork runs in Firefox 128+ and Chrome 111+ (Edge too) from the same file
 - **Firefox:** open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on** and pick `manifest.json`. It lasts until Firefox restarts.
 - **Chrome or Edge:** open `chrome://extensions` (`edge://extensions`), turn on **Developer mode**, click **Load unpacked** and pick this folder.
 
-For a permanent install, build the zips (below) and submit them. On addons.mozilla.org choose **On this site** to list it there: Mozilla signs it, reviews it and sends updates. To hand out the signed file yourself instead, build with `--self-hosted` and choose **On your own**. The Chrome zip goes to the Chrome Web Store (a one-time $5 developer registration) and, unchanged, to Edge Add-ons (free).
+For a permanent install, tagged releases go to the Chrome Web Store and addons.mozilla.org (see [Releases](#releases)); the Chrome zip also goes, unchanged, to Edge Add-ons. To hand out a signed Firefox file yourself instead, build with `--self-hosted` and choose **On your own** on addons.mozilla.org.
 
 ## Privacy
 
@@ -103,13 +103,63 @@ python tools/build.py
 
 That writes both store packages from the one `manifest.json`: `dist/betterwebwork-<version>-firefox.zip` for addons.mozilla.org and `dist/betterwebwork-<version>-chrome.zip` for the Chrome Web Store and Edge Add-ons. Each keeps only its own browser's manifest keys (Firefox's `background.scripts` and add-on ID; Chrome's service worker and minimum version). `--self-hosted` also writes `betterwebwork-<version>-firefox-self-hosted.zip`, whose manifest points Firefox at the latest GitHub release's `updates.json` for updates, and writes that `updates.json` too. Mozilla refuses that update address on a listed add-on, so only this build carries it.
 
-A release is one command and two uploads:
+What to enter in the Chrome Web Store dashboard (description, permission justifications, privacy answers) is in [store/chrome-web-store.md](store/chrome-web-store.md). `tools/gen_icons.py` draws the icons and `tools/vendor_fonts.py` fetches the fonts (both already run; their output is checked in).
+
+## Releases
+
+Pushing a tag `v<version>` releases that version to both stores. [.github/workflows/release.yml](.github/workflows/release.yml) runs the tests, checks the tag against `manifest.json`, builds the two zips, then:
+
+- **Chrome:** `tools/cws.py` uploads the `-chrome.zip` through the Chrome Web Store API and submits it. It goes out when Google's review passes.
+- **Firefox:** `web-ext sign --channel listed` submits the `-firefox.zip` to addons.mozilla.org. Mozilla signs and reviews it and sends it to installed copies. The first one also creates the listing from [store/amo-metadata.json](store/amo-metadata.json).
+- **GitHub:** a release for the tag with both zips.
 
 ```bash
 python tools/build.py --bump 0.2.0
 ```
 
-Upload the `-firefox.zip` as a new version on addons.mozilla.org and the `-chrome.zip` as a new package in the Chrome Web Store dashboard (and Edge Partner Center). Both carry the same version number. What to enter in the Chrome Web Store dashboard (description, permission justifications, privacy answers) is in [store/chrome-web-store.md](store/chrome-web-store.md). `tools/gen_icons.py` draws the icons and `tools/vendor_fonts.py` fetches the fonts (both already run; their output is checked in).
+```bash
+git commit -am "Release 0.2.0" && git tag v0.2.0 && git push origin main v0.2.0
+```
+
+Edge Add-ons isn't automated: upload the same `-chrome.zip` in Partner Center by hand.
+
+### One-time setup
+
+Chrome Web Store:
+
+1. Upload the first version by hand. The API only updates an item that already exists. In the [Developer Dashboard](https://chrome.google.com/webstore/devconsole/), add a new item, upload `dist/betterwebwork-<version>-chrome.zip`, fill in the Store listing and Privacy tabs from [store/chrome-web-store.md](store/chrome-web-store.md), and submit it for review.
+2. Turn on 2-step verification for the Google account. Google requires it to publish.
+3. In the [Google Cloud console](https://console.cloud.google.com/), create or pick a project, search for "Chrome Web Store API" and enable it.
+4. In [IAM & Admin > Service accounts](https://console.cloud.google.com/iam-admin/serviceaccounts), create a service account. It needs no roles. Open it, go to **Keys > Add key > Create new key > JSON**, and keep the downloaded file for step 7.
+5. In the Developer Dashboard's **Account** section, add the service account's email (the `...@...iam.gserviceaccount.com` address). A publisher can have one.
+6. Note the publisher ID (Developer Dashboard, **Publisher > Settings**) and the item ID (the 32-letter ID of the BetterWebWork item, shown under its name in the dashboard and at the end of its store address).
+7. Store them in the repository, then delete the downloaded key file:
+
+```bash
+gh secret set CWS_SERVICE_ACCOUNT_JSON -R imanimal/betterwebwork < path/to/key.json
+```
+
+```bash
+gh variable set CWS_PUBLISHER_ID -R imanimal/betterwebwork
+```
+
+```bash
+gh variable set CWS_ITEM_ID -R imanimal/betterwebwork
+```
+
+addons.mozilla.org: one API key covers every add-on on the account, so PocketCanvas's key works here too ([get or regenerate it](https://addons.mozilla.org/developers/addon/api/key/)). `gh` asks for each value:
+
+```bash
+gh secret set AMO_JWT_ISSUER -R imanimal/betterwebwork
+```
+
+```bash
+gh secret set AMO_JWT_SECRET -R imanimal/betterwebwork
+```
+
+The first tagged release creates the AMO listing, so nothing is uploaded there by hand. Screenshots (the same ones in `store/screenshots/`) and a longer description can be added on the listing later.
+
+If the Chrome Web Store's visibility settings are changed in the dashboard, publish once by hand with the new setting before the API can publish again.
 
 ## Credits
 
