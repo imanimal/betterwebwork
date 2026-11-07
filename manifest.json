@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "BetterWebWork",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A cleaner WeBWorK: centered problems, one-click navigation, plain-language answer feedback, saved drafts, dark mode and themes.",
   "homepage_url": "https://github.com/imanimal/betterwebwork",
   "author": "imanimal",
@@ -35,7 +35,7 @@
     },
     {
       "matches": ["*://*/webwork2", "*://*/webwork2/*"],
-      "js": ["src/lib/icons.js", "src/lib/advice.js", "src/ui/kit.js", "src/ui/settings.js", "src/content/app.js"],
+      "js": ["src/lib/icons.js", "src/lib/advice.js", "src/ui/kit.js", "src/ui/settings.js", "src/content/viewer.js", "src/content/app.js"],
       "run_at": "document_idle",
       "all_frames": true
     }

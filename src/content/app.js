@@ -101,8 +101,10 @@
         fitMaths();
       } catch (e) { console.error("BetterWebWork:", e); }
       keys();
+      images();
     }
     root.dataset.bwReady = "";
+    if (root.dataset.bwEnter) setTimeout(() => { delete root.dataset.bwEnter; delete root.dataset.bwDir; }, 1000);
   }
 
   // ── the bar: menu, where you are, who you are, settings, log out ──
@@ -232,9 +234,14 @@
     P.set = DATA.sets[`${R.host}/${R.course}/${R.set}`] || null;
     const t = ww.txt($("#page-title")).match(/Problem\s+([\d.]+)/i);
     P.n = t ? t[1] : R.problem;
-    const sib = ww.siblings(document);
-    head(ww.nav(document));
+    const sib = ww.siblings(document), nv = ww.nav(document);
+    head(nv);
     if (sib.length > 1) rail(sib);
+    prefetch(nv);
+    document.addEventListener("click", (e) => {
+      const a = e.target.closest && e.target.closest("a[href]");
+      if (a && !e.defaultPrevented && !e.button && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey && (!a.target || a.target === "_self") && !a.hasAttribute("download")) leave(a.href);
+    });
     stats();
     notes();
     const pb = $("#problem_body");
@@ -270,6 +277,65 @@
     if (nv && navBox) { hide(navBox); const r = navBox.parentElement; if (![...r.children].some((c) => !c.classList.contains("bw-hidden"))) hide(r); }
     skipTo();
     P.head = h;
+  }
+
+  /** The problems next door, fetched ahead so going to one is quick: the next one now, the previous one and the rail's
+      others once the pointer rests on them. Chrome takes speculation rules; Firefox, <link rel="prefetch">. */
+  function prefetch(nv) {
+    const near = ".bw-pnav a[data-dir], .bw-rail a.bw-pk:not(.cur)", head = document.head || root;
+    if (HTMLScriptElement.supports && HTMLScriptElement.supports("speculationrules")) {
+      const rules = [{ source: "document", where: { selector_matches: near }, eagerness: "moderate" }];
+      if (nv && nv.next) rules.unshift({ source: "list", urls: [nv.next], eagerness: "immediate" });
+      const sc = document.createElement("script");
+      sc.type = "speculationrules"; sc.setAttribute("data-bw-x", ""); sc.textContent = JSON.stringify({ prefetch: rules });
+      head.append(sc);
+      return;
+    }
+    const got = new Set();
+    const get = (href) => {
+      if (!href || got.has(href)) return; got.add(href);
+      const l = document.createElement("link"); l.rel = "prefetch"; l.href = href; l.setAttribute("data-bw-x", ""); head.append(l);
+    };
+    if (nv) get(nv.next);
+    let t = 0;
+    document.addEventListener("pointerover", (e) => {
+      const a = e.target.closest && e.target.closest(near);
+      clearTimeout(t); if (a) t = setTimeout(() => get(a.href), 150);
+    });
+  }
+
+  // ── moving between problems: a way out picked at random, and the next page comes in the same way (boot.js) ──
+  const GO = "bww.go", MOVES = ["slide", "rise", "zoom", "swing", "cascade"];
+  function leave(href) {
+    const to = ww.route(href);
+    if (!to || to.kind !== "problem" || to.course !== R.course || to.set !== R.set || to.problem === R.problem) return;
+    if (!root.hasAttribute("data-bw-on") || root.dataset.bwMotion === "off" || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let last = null;
+    try { last = (JSON.parse(sessionStorage.getItem(GO) || "{}") || {}).m; } catch (e) { /* none yet */ }
+    const pool = MOVES.concat(root.dataset.bwLook === "pocket" ? ["wipe"] : []).filter((m) => m !== last);
+    const m = pool[Math.floor(Math.random() * pool.length)], dir = +to.problem < +R.problem ? "back" : "fwd";
+    try { sessionStorage.setItem(GO, JSON.stringify({ m, dir, to: to.key, t: now() })); } catch (e) { return; }
+    root.dataset.bwDir = dir; root.dataset.bwLeave = m;
+    // if the page doesn't go after all, it comes back
+    setTimeout(() => delete root.dataset.bwLeave, 4000);
+  }
+  addEventListener("pageshow", (e) => { if (e.persisted) delete root.dataset.bwLeave; });
+
+  // ── images: WeBWorK's viewer (a modal that blocks the page) gives way to ours (content/viewer.js) ──
+  let imagesOn = false;
+  function images() {
+    if (imagesOn) return; imagesOn = true;
+    const pick = (e) => (root.hasAttribute("data-bw-on") && e.target.closest ? e.target.closest(".image-view-elt") : null);
+    // caught on the way down, before PG's own listener on the image hears it
+    addEventListener("click", (e) => {
+      const el = pick(e); if (!el || e.button) return;
+      e.preventDefault(); e.stopImmediatePropagation(); BW.viewer.open(el);
+    }, true);
+    addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      const el = pick(e); if (!el || e.target !== el) return;
+      e.preventDefault(); e.stopImmediatePropagation(); BW.viewer.open(el);
+    }, true);
   }
 
   function track(cls) {
@@ -794,7 +860,7 @@
         return;
       }
       if (mod || e.altKey || (e.target.closest && e.target.closest("input, textarea, select, [contenteditable], .mq-editable-field"))) return;
-      if (e.key === "[" || e.key === "]") { const a = $(`.bw-pnav [data-dir="${e.key === "[" ? "prev" : "next"}"]`); if (a) { e.preventDefault(); location.href = a.href; } }
+      if (e.key === "[" || e.key === "]") { const a = $(`.bw-pnav [data-dir="${e.key === "[" ? "prev" : "next"}"]`); if (a) { e.preventDefault(); leave(a.href); location.href = a.href; } }
       else if (e.key === "/" && $("#bw-courses input")) { e.preventDefault(); $("#bw-courses input").focus(); }
       else if (e.key === "?") { e.preventDefault(); openSettings("keys"); }
     });
