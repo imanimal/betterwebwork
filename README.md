@@ -4,6 +4,10 @@ A Firefox and Chrome extension that gives WeBWorK a cleaner, calmer page. It res
 
 It works on any WeBWorK whose address has `/webwork2/` in it (built against 2.18, the version UCSB runs, and reads 2.19's feedback too).
 
+- **Website:** https://imanimal.github.io/betterwebwork/
+- **Live demo, no install or WeBWorK login:** [a sample homework problem](https://imanimal.github.io/betterwebwork/demo/webwork2/math4a-01-f26-blee/Week_1/3/), a saved WeBWorK 2.18 page running the extension's own scripts. Problems 1, 3 and 4, the set, the course and the course list are there too. Answers there go nowhere.
+- **Install:** [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/betterwebwork/), [Chrome Web Store](https://chromewebstore.google.com/detail/betterwebwork/hogfngmddcjkemnfmdamdhegaioakcan) (Edge installs from there too).
+
 ## What changes
 
 **Problem pages**
@@ -35,6 +39,17 @@ It works on any WeBWorK whose address has `/webwork2/` in it (built against 2.18
 - Reading settings: typeface (Atkinson Hyperlegible or your system's), problem text size, page width, how graphs show on dark themes, motion, 24-hour clock.
 - Turn it off for one site from the toolbar button; the page goes back to WeBWorK's own look without a reload.
 
+## How it works
+
+A Manifest V3 extension in plain JavaScript and CSS: no framework, no bundler, no npm. One source tree and one `manifest.json` load in both Firefox and Chrome, and `tools/build.py` writes each store's package from them.
+
+- **Restyle, never replace.** The content scripts hide or move WeBWorK's own elements and never delete them, so every form posts exactly as WeBWorK wrote it, and turning the extension off puts the page back without a reload.
+- **No flash of the old page.** `boot.js` runs before the page draws and paints the saved look from a copy in the page's own storage; `app.js` builds the rest once the page is ready.
+- **Reading WeBWorK.** `ww.js` reads the route, set statuses, score lines and attempt results out of WeBWorK's HTML. `advice.js` turns what you typed and how WeBWorK parsed it into notes, and only says what's certain. `page.js` runs inside the page itself, the only way to reach its MathJax and MathQuill.
+- **Drafts.** What you type is written synchronously to the page's localStorage as you type and when the page closes, since an asynchronous write may not land before the page goes.
+- **Tests.** `tests/core.test.js` (Node's test runner) covers the parsing, the notes, themes and drafts. `tests/fixtures/` holds saved WeBWorK 2.18 pages that load the real content scripts with a stand-in for the browser's extension APIs; the website's live demo is those same pages.
+- **Shipping.** GitHub Actions publish the website to GitHub Pages on every push to `main`, and a version tag sends the packages to the Chrome Web Store (its API) and Firefox Add-ons (`web-ext sign`).
+
 ## Keyboard
 
 | Keys | Does |
@@ -49,7 +64,7 @@ It works on any WeBWorK whose address has `/webwork2/` in it (built against 2.18
 
 ## Install
 
-BetterWebWork runs in Firefox 128+ and Chrome 111+ (Edge too) from the same files. It isn't in either store yet. To try it from this folder:
+BetterWebWork runs in Firefox 128+ and Chrome 111+ (Edge too) from the same files. Get it from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/betterwebwork/) or the [Chrome Web Store](https://chromewebstore.google.com/detail/betterwebwork/hogfngmddcjkemnfmdamdhegaioakcan) (Edge installs from there too). To run it from this folder instead:
 
 - **Firefox:** open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on** and pick `manifest.json`. It lasts until Firefox restarts.
 - **Chrome or Edge:** open `chrome://extensions` (`edge://extensions`), turn on **Developer mode**, click **Load unpacked** and pick this folder.
@@ -160,6 +175,16 @@ gh secret set AMO_JWT_SECRET -R imanimal/betterwebwork
 The first tagged release creates the AMO listing, so nothing is uploaded there by hand. Screenshots (the same ones in `store/screenshots/`) and a longer description can be added on the listing later.
 
 If the Chrome Web Store's visibility settings are changed in the dashboard, publish once by hand with the new setting before the API can publish again.
+
+## Website
+
+The site at https://imanimal.github.io/betterwebwork/ is built from `site/`: the home page and a guide to typing answers in WeBWorK (`site/answers/`). It runs the extension's own `themes.js`, `icons.js` and `advice.js`, copied in by the build, so its "Try a wrong answer" notes and theme picker are the extension's. The build also copies the fixtures and `src/` into `demo/`, the live demo, moving their root paths under the site's address (`tests/fixtures/shim.js` finds its root from the page's `kit.css` link).
+
+```bash
+python tools/site.py
+```
+
+That writes `dist/site/`. Serve that folder to look at it (`python -m http.server 4807 --directory dist/site`). [.github/workflows/pages.yml](.github/workflows/pages.yml) builds and publishes it on every push to `main` that touches it; turn on **Settings > Pages > Source: GitHub Actions** once. The store addresses live in `STORES` in `tools/site.py`; each install key on the site goes to the store for the browser it's opened in. Emptying them brings back the load-it-yourself steps.
 
 ## Credits
 

@@ -1,6 +1,9 @@
 // A stand-in for Firefox's extension APIs, so the fixture pages run the real content scripts in any browser.
-// storage.local lives in the page's localStorage ("bww.shim"); runtime.getURL serves from the repo root.
+// storage.local lives in the page's localStorage ("bww.shim"); runtime.getURL serves from the repo root, which is
+// wherever the page's kit.css link says src/ is (/ here, demo/ on the website, tools/site.py).
 (function () {
+  const css = document.querySelector('link[href$="src/ui/kit.css"]');
+  const ROOT = css ? css.getAttribute("href").replace(/src\/ui\/kit\.css$/, "") : "/";
   const KEY = "bww.shim";
   let data = {};
   try { data = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { data = {}; }
@@ -21,7 +24,7 @@
   };
   window.browser = {
     storage: { local, onChanged: { addListener: (f) => listeners.push(f), removeListener: (f) => { const i = listeners.indexOf(f); if (i >= 0) listeners.splice(i, 1); } } },
-    runtime: { getURL: (p) => "/" + p, getManifest: () => ({ version: "fixture" }), onMessage: { addListener() {} }, async openOptionsPage() { location.href = "/src/pages/options.html"; } },
+    runtime: { getURL: (p) => ROOT + p, getManifest: () => ({ version: "fixture" }), onMessage: { addListener() {} }, async openOptionsPage() { location.href = ROOT + "src/pages/options.html"; } },
     tabs: { async query() { return [{ id: 1, url: location.href }]; }, async sendMessage() { return true; }, async create(o) { window.open(o.url); }, async update(id, o) { location.href = o.url; } },
   };
   // forms in fixtures go nowhere; the console says what WeBWorK would have received

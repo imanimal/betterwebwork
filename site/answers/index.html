@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en" data-bw-on data-bw-look="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to type answers in WeBWorK: syntax cheat sheet and error messages</title>
+<meta name="description" content="How to type exponents, square roots, e, logs, pi, infinity, intervals and vectors in WeBWorK, why answers get marked incorrect, and what WeBWorK's error messages mean.">
+<link rel="canonical" href="{{site}}answers/">
+<meta name="theme-color" content="#f1eee7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161513" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="BetterWebWork">
+<meta property="og:title" content="How to type answers in WeBWorK">
+<meta property="og:description" content="A cheat sheet for WeBWorK answer syntax, and what its error messages mean.">
+<meta property="og:url" content="{{site}}answers/">
+<meta property="og:image" content="{{site}}img/social.png">
+<meta property="og:image:width" content="1400">
+<meta property="og:image:height" content="560">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/icon-32.png" sizes="32x32">
+<link rel="icon" href="../img/icon-96.png" sizes="96x96">
+<link rel="apple-touch-icon" href="../img/icon-128.png">
+<link rel="preload" href="../fonts/atkinson-next.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css">
+<script src="../lib/themes.js"></script>
+<script src="../boot.js"></script>
+<script type="application/ld+json">
+[{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "How to type answers in WeBWorK",
+  "description": "WeBWorK answer syntax (exponents, roots, e, logs, pi, infinity, intervals, points, vectors) and what its error messages mean.",
+  "url": "{{site}}answers/",
+  "dateModified": "{{date}}",
+  "author": { "@type": "Organization", "name": "BetterWebWork", "url": "{{site}}" },
+  "about": "WeBWorK"
+}, {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "BetterWebWork", "item": "{{site}}" },
+    { "@type": "ListItem", "position": 2, "name": "Typing answers in WeBWorK", "item": "{{site}}answers/" }
+  ]
+}]
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the page</a>
+
+<header class="bar">
+  <a class="brand" href="../"><img src="../img/icon-32.png" alt="" width="28" height="28">BetterWebWork</a>
+  <ol class="crumbs" aria-label="You are here">
+    <li><a href="../">Home</a></li>
+    <li><a href="./">Typing answers</a></li>
+    <li aria-current="page" id="crumb">Problem 1</li>
+  </ol>
+  <div class="end">
+    <a class="ghlink" href="../#install" data-get data-firefox="{{firefox}}" data-chrome="{{chrome}}"><span>Install</span></a>
+    <a class="ghlink" href="https://github.com/imanimal/betterwebwork">GitHub</a>
+    <label class="switch" title="Turn BetterWebWork off to see this page as WeBWorK would draw it"><input type="checkbox" id="onoff" checked><span>On</span></label>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="strip" aria-label="Sections on this page">
+    <h2>Typing answers</h2>
+    <ol>
+      <li><a href="#basics"><span class="mark" data-mark></span><span><span class="n">Problem 1</span> <small class="long">The basics</small></span></a></li>
+      <li><a href="#functions"><span class="mark" data-mark></span><span><span class="n">Problem 2</span> <small class="long">Functions</small></span></a></li>
+      <li><a href="#types"><span class="mark" data-mark></span><span><span class="n">Problem 3</span> <small class="long">Intervals, points, vectors</small></span></a></li>
+      <li><a href="#slips"><span class="mark" data-mark></span><span><span class="n">Problem 4</span> <small class="long">Why it's marked wrong</small></span></a></li>
+      <li><a href="#messages"><span class="mark" data-mark></span><span><span class="n">Problem 5</span> <small class="long">Error messages</small></span></a></li>
+    </ol>
+  </nav>
+
+  <main id="main" class="prose">
+    <section class="hero" aria-labelledby="title">
+      <p class="eyebrow"><b>Guide</b> <span>WeBWorK 2.18 and 2.19</span></p>
+      <h1 id="title">How to type answers in WeBWorK</h1>
+      <p class="lede">WeBWorK reads answers as typed text, so a right answer written the wrong way is marked incorrect. This page covers how to write each kind of answer, the slips that cost the most attempts, and what WeBWorK's error messages mean.</p>
+      <p>Two habits save the most attempts: press <b>Preview My Answers</b> before you submit, since it shows how WeBWorK read your answer and doesn't use an attempt; and when a problem's own instructions say something different from this page, follow the problem.</p>
+    </section>
+
+    <section class="problem" id="basics" aria-labelledby="basics-h" data-problem>
+      <p class="eyebrow"><b>Problem 1</b></p>
+      <h2 id="basics-h">The basics</h2>
+      <table class="sheet">
+        <thead><tr><th>To write</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Times</td><td><code>2*x</code> or <code>2x</code></td><td>Put <code>*</code> between letters: <code>x*y</code>, not <code>xy</code>.</td></tr>
+          <tr><td>Divide</td><td><code>(x+1)/(x-1)</code></td><td>Wrap the whole top and the whole bottom in parentheses.</td></tr>
+          <tr><td>Powers</td><td><code>x^2</code> or <code>x**2</code></td><td>A power with more than one piece needs parentheses: <code>x^(n+1)</code>.</td></tr>
+          <tr><td>Negative powers</td><td><code>e^(-2x)</code>, <code>x^(-1)</code></td><td><code>e^-2x</code> is read as <code>(e^-2)·x</code>.</td></tr>
+          <tr><td>Fractional powers</td><td><code>x^(1/2)</code>, <code>x^(2/3)</code></td><td><code>x^1/2</code> is read as <code>(x^1)/2</code>.</td></tr>
+          <tr><td>Square root</td><td><code>sqrt(x)</code></td><td>Other roots as powers: the cube root of x is <code>x^(1/3)</code>.</td></tr>
+          <tr><td>π</td><td><code>pi</code></td><td>Typing the π symbol may not be read.</td></tr>
+          <tr><td>e</td><td><code>e</code>, <code>e^(x)</code> or <code>exp(x)</code></td><td></td></tr>
+          <tr><td>Infinity</td><td><code>inf</code> or <code>infinity</code></td><td>Negative infinity is <code>-inf</code>.</td></tr>
+          <tr><td>Absolute value</td><td><code>abs(x)</code> or <code>|x|</code></td><td></td></tr>
+          <tr><td>Big numbers</td><td><code>1000</code> or <code>1E3</code></td><td>No thousands commas: a comma separates list entries.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="problem" id="functions" aria-labelledby="functions-h" data-problem>
+      <p class="eyebrow"><b>Problem 2</b></p>
+      <h2 id="functions-h">Functions</h2>
+      <p>Always put a function's input in parentheses: <code>sin(x)</code>, <code>ln(x+1)</code>, <code>sqrt(2)</code>. Without them WeBWorK may take only part of what follows as the input, or read the letters as variables multiplied together.</p>
+      <table class="sheet">
+        <thead><tr><th>Function</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Natural log</td><td><code>ln(x)</code> or <code>log(x)</code></td><td>In WeBWorK <code>log</code> usually means the natural log, the same as <code>ln</code>.</td></tr>
+          <tr><td>Log base 10</td><td><code>log10(x)</code></td><td>Other bases by change of base: <code>ln(x)/ln(2)</code>.</td></tr>
+          <tr><td>Trig</td><td><code>sin(x)</code>, <code>cos(x)</code>, <code>tan(x)</code>, <code>sec(x)</code>, <code>csc(x)</code>, <code>cot(x)</code></td><td>Angles are in radians unless the problem says degrees.</td></tr>
+          <tr><td>Powers of trig</td><td><code>sin(x)^2</code></td><td>The plainest way to write sin²(x): the power after the parentheses.</td></tr>
+          <tr><td>Inverse trig</td><td><code>arcsin(x)</code> or <code>asin(x)</code></td><td>Likewise <code>arccos</code>, <code>arctan</code>.</td></tr>
+          <tr><td>Hyperbolic</td><td><code>sinh(x)</code>, <code>cosh(x)</code>, <code>tanh(x)</code></td><td></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="problem" id="types" aria-labelledby="types-h" data-problem>
+      <p class="eyebrow"><b>Problem 3</b></p>
+      <h2 id="types-h">Intervals, points, vectors and lists</h2>
+      <table class="sheet">
+        <thead><tr><th>Answer</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Interval</td><td><code>(2, 5]</code>, <code>[0, inf)</code></td><td><code>( )</code> leaves an endpoint out, <code>[ ]</code> includes it, and infinity always gets <code>( )</code>. The smaller endpoint comes first.</td></tr>
+          <tr><td>Union</td><td><code>(-inf, 3) U (4, inf)</code></td><td>A capital <code>U</code> joins intervals.</td></tr>
+          <tr><td>Point</td><td><code>(3, -1)</code></td><td></td></tr>
+          <tr><td>Vector</td><td><code>&lt;1, 2, 3&gt;</code></td><td>Or with <code>i</code>, <code>j</code>, <code>k</code> if the problem uses them.</td></tr>
+          <tr><td>List</td><td><code>-2, 0, 3</code></td><td>Commas between entries; the order usually doesn't matter. No repeats.</td></tr>
+          <tr><td>Equation</td><td><code>y = 2x + 1</code></td><td>Only when the problem asks for an equation. Otherwise leave out the label: <code>5</code>, not <code>x = 5</code>.</td></tr>
+          <tr><td>No answer</td><td><code>DNE</code></td><td>Many problems take <code>DNE</code> for "does not exist"; the problem says if it does.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="problem" id="slips" aria-labelledby="slips-h" data-problem>
+      <p class="eyebrow"><b>Problem 4</b></p>
+      <h2 id="slips-h">Why a right answer gets marked wrong</h2>
+      <h3>Rounding too early</h3>
+      <p>WeBWorK usually accepts a number within 0.1% of the right one. <code>0.33</code> for 1/3 is 1% off and is marked wrong. Give at least four significant digits (<code>0.3333</code>), or the exact value (<code>1/3</code>). Keep full precision in the middle steps too, not only in the final answer.</p>
+      <h3>An ambiguous fraction</h3>
+      <p><code>1/2x</code> can be read as one half of x or as one over 2x. Write <code>(1/2)x</code> or <code>1/(2x)</code> so there's only one reading, and preview it.</p>
+      <h3>Symbols copied from somewhere else</h3>
+      <p>A <code>×</code>, <code>÷</code>, <code>−</code> (a long minus), <code>√</code>, <code>π</code>, <code>²</code> or <code>°</code> pasted from notes or a calculator often can't be read. Type them as <code>*</code>, <code>/</code>, <code>-</code>, <code>sqrt( )</code>, <code>pi</code> and <code>^2</code>, and leave out the degree sign.</p>
+      <h3>The wrong variable</h3>
+      <p>Variables are case-sensitive: <code>X</code> and <code>x</code> are different. Use the letters the problem uses, and <code>t</code> if the problem is in terms of t.</p>
+      <h3>A decimal where an exact answer is wanted</h3>
+      <p>Some problems want an exact answer: <code>2/3</code>, <code>sqrt(2)</code>, <code>pi/4</code>. A decimal, however precise, isn't accepted there.</p>
+      <h3>Part of it is right</h3>
+      <p>Lists, intervals and multi-part blanks give credit for each correct piece. Keep the pieces you're sure of and change the rest.</p>
+    </section>
+
+    <section class="problem" id="messages" aria-labelledby="messages-h" data-problem>
+      <p class="eyebrow"><b>Problem 5</b></p>
+      <h2 id="messages-h">WeBWorK's error messages, explained</h2>
+      <p>WeBWorK's messages come from its answer checker and can be terse. What they usually mean:</p>
+      <h3 class="msg">Unexpected character '…'</h3>
+      <p>WeBWorK found a symbol it can't read, often one pasted in (<code>×</code>, <code>−</code>, <code>π</code>, <code>√</code>, <code>²</code>). Type it with the keys on your keyboard instead.</p>
+      <h3 class="msg">Variable 'X' is not defined in this context</h3>
+      <p>The answer uses a letter the problem doesn't. Check the case (<code>X</code> versus <code>x</code>). If the name is longer, like <code>'sni'</code> or <code>'xy'</code>, it's a misspelled function or letters multiplied without <code>*</code>.</p>
+      <h3 class="msg">Your answer isn't a number (it looks like a formula that returns a number)</h3>
+      <p>The blank wants one value, but your answer still has a variable in it. Work it out to a single number.</p>
+      <h3 class="msg">Your answer isn't a formula that returns a number (it looks like a number)</h3>
+      <p>The opposite: the blank wants an expression in the variable, and your answer is a plain number.</p>
+      <h3 class="msg">Your answer isn't a number (it looks like a list of numbers)</h3>
+      <p>A comma turned your answer into a list. Leave out commas, including in numbers like 1,000.</p>
+      <h3 class="msg">Missing operand after '*'</h3>
+      <p>An operator is missing a value on one side, as in <code>2*</code> or <code>*x</code>. Often a typo or a deleted term.</p>
+      <h3>Missing or extra parentheses</h3>
+      <p>Count them: every <code>(</code> needs a <code>)</code>. Intervals mix brackets on purpose, <code>[2, 5)</code>, and that's fine.</p>
+      <h3 class="msg">Function 'sqrt' has too many inputs</h3>
+      <p>A comma or a misplaced parenthesis inside the function, like <code>sqrt(2,3)</code>.</p>
+      <h3 class="msg">Can't generate enough valid points for comparison</h3>
+      <p>WeBWorK checks a formula by plugging numbers into yours and the right one. Yours couldn't be worked out at enough of them: a square root or log of a negative number, or a division by zero. Check the domain of each piece.</p>
+      <h3 class="msg">Division by zero</h3>
+      <p>Your expression divides by zero at a value WeBWorK tried. Check denominators, and whether a factor cancels to 0.</p>
+      <h3 class="msg">Function 'sin' is not allowed in this context</h3>
+      <p>The problem doesn't let you use that function or operator here, usually so you work the value out yourself. Simplify it away.</p>
+    </section>
+
+    <section class="card" aria-labelledby="cta-h">
+      <h2 id="cta-h">Get these notes on the page itself</h2>
+      <p>BetterWebWork, a free extension for Firefox and Chrome, puts a short note like these under each answer WeBWorK marks incorrect, and keeps WeBWorK's own message first. It also adds dark mode, saved drafts and one-click problem navigation.</p>
+      <div class="keys"><a class="btn" href="../#install" data-get data-firefox="{{firefox}}" data-chrome="{{chrome}}"><i data-ic="download"></i><span>Add it to your browser</span></a><a class="btn quiet" href="../#try">Try a wrong answer</a><span class="muted" data-also hidden></span></div>
+    </section>
+  </main>
+</div>
+
+<footer class="foot">
+  <p>BetterWebWork {{version}}, MIT license</p>
+  <p><a href="../">Home</a></p>
+  <p><a href="https://github.com/imanimal/betterwebwork">Source on GitHub</a></p>
+  <p><a href="https://github.com/imanimal/betterwebwork/blob/main/PRIVACY.md">Privacy</a></p>
+  <p class="fine">BetterWebWork is an independent project. It isn't affiliated with WeBWorK, the MAA or any school. Problems can set their own rules; a problem's own instructions win over this page.</p>
+</footer>
+
+<p class="offnote" role="status">This is the page without BetterWebWork. <button type="button" class="btn" id="backon">Turn it back on</button></p>
+<p class="toast" id="toast" role="status"></p>
+
+<script src="../lib/icons.js"></script>
+<script src="../site.js"></script>
+</body>
+</html>
