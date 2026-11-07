@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BetterWebWork: a cleaner WeBWorK, with dark mode and answer help</title>
-<meta name="description" content="A free Firefox and Chrome extension for WeBWorK homework: centered problems, dark mode, saved drafts, and plain-language notes on why an answer was marked incorrect.">
+<meta name="description" content="A free Firefox and Chrome extension that makes WeBWorK homework easier to read and tells you when WeBWorK misread an answer you typed. It has a dark mode too.">
 <link rel="canonical" href="{{site}}">
 <meta name="theme-color" content="#f1eee7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#161513" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BetterWebWork">
 <meta property="og:title" content="BetterWebWork: a cleaner, calmer WeBWorK">
-<meta property="og:description" content="Centered problems, dark mode, saved drafts, and plain-language notes on your answers. Free for Firefox and Chrome.">
+<meta property="og:description" content="A free extension that makes WeBWorK easier to read and tells you when it misread what you typed. For Firefox and Chrome.">
 <meta property="og:url" content="{{site}}">
 <meta property="og:image" content="{{site}}img/social.png">
 <meta property="og:image:width" content="1400">
@@ -48,140 +48,101 @@
 
 <header class="bar">
   <a class="brand" href="./"><img src="img/icon-32.png" alt="" width="28" height="28">BetterWebWork</a>
-  <ol class="crumbs" aria-label="You are here">
-    <li><a href="./">Home</a></li>
-    <li aria-current="page" id="crumb">Problem 1</li>
-  </ol>
   <div class="end">
     <a class="ghlink" href="answers/">Typing answers</a>
     <a class="ghlink" href="https://github.com/imanimal/betterwebwork">GitHub</a>
     <label class="switch" title="Turn BetterWebWork off to see this page as WeBWorK would draw it"><input type="checkbox" id="onoff" checked><span>On</span></label>
+    <a class="btn small" href="#install" data-get data-firefox="{{firefox}}" data-chrome="{{chrome}}">Install</a>
   </div>
 </header>
 
-<div class="wrap">
-  <nav class="strip" aria-label="Problems on this page">
-    <h2>Home set</h2>
-    <div class="meter" data-bw-x><span id="readcount">0 of 5 read</span><div class="segs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></div>
-    <ol>
-      <li><a href="#changes"><span class="mark" data-mark></span><span><span class="n">Problem 1</span> <small class="long">What changes</small></span></a></li>
-      <li><a href="#try"><span class="mark" data-mark></span><span><span class="n">Problem 2</span> <small class="long">Try an answer</small></span></a></li>
-      <li><a href="#themes"><span class="mark" data-mark></span><span><span class="n">Problem 3</span> <small class="long">Themes</small></span></a></li>
-      <li><a href="#install"><span class="mark" data-mark></span><span><span class="n">Problem 4</span> <small class="long">Install</small></span></a></li>
-      <li><a href="#questions"><span class="mark" data-mark></span><span><span class="n">Problem 5</span> <small class="long">Questions</small></span></a></li>
-    </ol>
-  </nav>
+<nav class="dots" aria-label="Sections" data-bw-x>
+  <a href="#top"><span>Start</span></a>
+  <a href="#try"><span>Wrong answers</span></a>
+  <a href="#themes"><span>Themes</span></a>
+  <a href="#set"><span>Your sets</span></a>
+  <a href="#install"><span>Install</span></a>
+</nav>
 
-  <main id="main">
-    <section class="hero" aria-labelledby="title">
-      <p class="eyebrow"><b>Browser extension</b> <span>Firefox, Chrome and Edge</span></p>
-      <h1 id="title">A cleaner, calmer WeBWorK</h1>
-      <p class="lede">BetterWebWork restyles the WeBWorK page you already have. The problem sits centered at a readable width, the other problems are one click away, and when an answer is marked incorrect you get a plain note on what WeBWorK read and what to try.</p>
-      <div class="keys">
-        <a class="btn" href="#install" data-get data-firefox="{{firefox}}" data-chrome="{{chrome}}"><i data-ic="download"></i><span>Add to your browser</span></a>
-        <a class="btn quiet" href="#try">Try it on this page</a>
-        <a class="btn quiet" href="demo/webwork2/math4a-01-f26-blee/Week_1/3/">Open a sample homework</a>
-        <span class="muted" data-also hidden></span>
+<main id="main">
+  <section class="screen opening" id="top" aria-labelledby="title">
+    <div class="copy">
+      <h1 id="title" data-rise>WeBWorK, cleaned up</h1>
+      <p class="lede" data-rise>BetterWebWork is a free browser extension that redraws your WeBWorK homework so it's easier to read and work through. When an answer gets marked wrong, it tells you if WeBWorK read what you typed differently from what you meant.</p>
+      <div class="keys" data-rise>
+        <a class="btn big" href="#install" data-get data-firefox="{{firefox}}" data-chrome="{{chrome}}"><i data-ic="download"></i><span data-label>Add to your browser</span></a>
+        <a class="btn quiet big" href="demo/webwork2/math4a-01-f26-blee/Week_1/3/">Try a sample homework</a>
       </div>
-      <dl class="stats">
-        <div><dt>Price</dt><dd>Free</dd></div>
-        <div><dt>Data sent</dt><dd><span class="num">0</span> <small>bytes</small></dd></div>
-        <div><dt>Grading</dt><dd>Unchanged</dd></div>
-        <div data-bw-x><dt>This page</dt><dd class="num" id="score">0%</dd></div>
-      </dl>
-      <figure class="shot">
-        <img class="light" src="img/problem-checked.png" width="1280" height="800" alt="A WeBWorK problem after Check answers with BetterWebWork: the set's problems in a list on the left, the score, attempts and attempts left in a row, and a results list with a note under each wrong answer.">
-        <img class="dark" src="img/problem-dark.png" width="1280" height="800" loading="lazy" alt="The same WeBWorK problem in Paper Dark, with a mark beside each answer blank.">
-        <figcaption>A problem after <em>Check answers</em>. The notes are BetterWebWork's; WeBWorK's own message always comes first.</figcaption>
-      </figure>
-    </section>
+      <p class="muted" data-also data-rise hidden></p>
+    </div>
+    <figure class="shot tilt" data-rise>
+      <img class="light" src="img/problem-checked.png" width="1280" height="800" alt="A WeBWorK problem with BetterWebWork on: the set's problems in a list on the left, the score and attempts in a row, and a note under each wrong answer.">
+      <img class="dark" src="img/problem-dark.png" width="1280" height="800" loading="lazy" alt="The same WeBWorK problem in the dark theme.">
+    </figure>
+  </section>
 
-    <section class="problem" id="changes" aria-labelledby="changes-h" data-problem>
-      <p class="eyebrow"><b>Problem 1</b> <span>1 point</span></p>
-      <h2 id="changes-h">What changes</h2>
-      <p>Nothing about how WeBWorK grades. Every form is sent exactly as WeBWorK wrote it; only the page around it changes.</p>
-      <ul class="feats">
-        <li><h3><i data-ic="work"></i>One problem, centered</h3><p>One bar on top with the course, set and problem as breadcrumbs. Wide equations widen the sheet instead of scrolling it.</p></li>
-        <li><h3><i data-ic="all"></i>The whole set, one click away</h3><p>Each problem is marked correct, partly correct, wrong or not started. <kbd>[</kbd> and <kbd>]</kbd> move between them.</p></li>
-        <li><h3><i data-ic="tip"></i>Notes on wrong answers</h3><p>What you typed, how WeBWorK read it, and a note on common slips like <code>e^-2x</code> or <code>sin x</code>. Quiet when there's nothing certain to say.</p></li>
-        <li><h3><i data-ic="note"></i>Your typing is kept</h3><p>A refresh or a trip to another problem doesn't lose what you typed in the blanks. Undo is one click.</p></li>
-        <li><h3><i data-ic="clock"></i>Due dates in words</h3><p>"Thu 11:59 PM, in 4 days", the reduced-credit window, and your progress in points.</p></li>
-        <li><h3><i data-ic="moon"></i>Dark mode and themes</h3><p>Paper by day, Paper Dark at night, or a Pocket theme. Every color can be adjusted, with contrast checks.</p></li>
-        <li><h3><i data-ic="warn"></i>A second press on your last try</h3><p>On your last attempt, Submit asks to be pressed again. Typing an answer that was already marked wrong shows when you tried it.</p></li>
-        <li><h3><i data-ic="lock"></i>Nothing leaves your browser</h3><p>No account, no server, no analytics. It only runs on pages whose address has <code>/webwork2/</code> in it.</p></li>
-      </ul>
-      <p class="muted" data-bw-x>Want to see what it restyles? Turn the switch in the top bar off: this page redraws the way WeBWorK draws its own.</p>
-    </section>
-
-    <section class="problem" id="try" aria-labelledby="try-h" data-problem>
-      <p class="eyebrow"><b>Problem 2</b> <span>1 point</span></p>
-      <h2 id="try-h">Try a wrong answer</h2>
-      <p>Type an answer the way you would in WeBWorK. The notes below come from the extension's own code, running on this page.</p>
-      <div class="card try">
-        <div class="ask">
-          <p class="restored" id="restored" data-bw-x hidden><span>Put back what you typed last time.</span><button type="button" id="undo">Undo</button></p>
-          <label for="ans">Answer 1
-            <span class="blank"><input type="text" id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e^-2x" aria-describedby="notes"><span class="verdict idle" id="verdict" data-bw-x aria-hidden="true"></span></span>
-          </label>
-          <div class="chips" data-bw-x><span>Or try</span>
-            <button type="button">e^-2x</button><button type="button">sin x</button><button type="button">x^1/2</button><button type="button">1/2x</button><button type="button">0.33</button><button type="button">1,000</button><button type="button">3×π</button><button type="button">((x+1)</button><button type="button">x = 5</button>
-          </div>
-          <label for="msg">Pretend WeBWorK said
-            <select id="msg">
-              <option value="">Nothing, it just marked it incorrect</option>
-              <option>Variable 'X' is not defined in this context</option>
-              <option>Your answer isn't a number (it looks like a formula that returns a number)</option>
-              <option>Your answer isn't a formula that returns a number (it looks like a number)</option>
-              <option>Your answer isn't a number (it looks like a list of numbers)</option>
-              <option>Missing operand after '*'</option>
-              <option>Can't generate enough valid points for comparison</option>
-              <option>Division by zero</option>
-              <option>Your answer should be reduced to lowest terms</option>
-            </select>
-          </label>
-        </div>
-        <div class="out" id="notes" aria-live="polite">
-          <table class="ww-table ww-only"><thead><tr><th>Entered</th><th>Result</th><th>Messages</th></tr></thead><tbody><tr><td id="ww-entered"></td><td class="bad">incorrect</td><td id="ww-msg"></td></tr></tbody></table>
-          <div data-bw-x id="bw-out"><p class="quiet-note">Type something, or pick one of the examples.</p></div>
+  <section class="screen" id="try" aria-labelledby="try-h">
+    <div class="copy">
+      <h2 id="try-h" data-rise>Find out why it was marked wrong</h2>
+      <p data-rise>Plenty of wrong answers are actually right, just typed in a way WeBWorK reads differently. Try one here and you'll get the same note the extension would put under your answer.</p>
+    </div>
+    <div class="card try" data-rise>
+      <div class="ask">
+        <p class="restored" id="restored" data-bw-x hidden><span>Put back what you typed last time.</span><button type="button" id="undo">Undo</button></p>
+        <label for="ans">Answer
+          <span class="blank"><input type="text" id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="notes"><span class="verdict idle" id="verdict" data-bw-x aria-hidden="true"></span></span>
+        </label>
+        <div class="chips" data-bw-x>
+          <button type="button">e^-2x</button><button type="button">sin x</button><button type="button">x^1/2</button><button type="button">1/2x</button><button type="button">0.33</button><button type="button">1,000</button><button type="button">3×π</button><button type="button">((x+1)</button><button type="button">x = 5</button>
         </div>
       </div>
-    </section>
-
-    <section class="problem" id="themes" aria-labelledby="themes-h" data-problem>
-      <p class="eyebrow"><b>Problem 3</b> <span>1 point</span></p>
-      <h2 id="themes-h">Pick a theme</h2>
-      <p>These are the extension's built-in themes. Pick one and this page wears it. Paper is the default; the Pocket themes bring the handheld look from Collegiapp, with its own fonts and pixel icons.</p>
-      <div class="card" data-bw-x>
-        <div class="setting"><span>Night</span>
-          <div class="seg" role="group" aria-label="Night" id="night"><button type="button" data-v="auto">With the system</button><button type="button" data-v="on">Always</button><button type="button" data-v="off">Never</button></div>
-        </div>
-        <div class="seg" role="group" aria-label="Which slot a theme fills" id="slots"><button type="button" data-v="day">Day</button><button type="button" data-v="night">Night</button></div>
-        <ul class="grid" id="grid"></ul>
+      <div class="out" id="notes" aria-live="polite">
+        <table class="ww-table ww-only"><thead><tr><th>Entered</th><th>Result</th></tr></thead><tbody><tr><td id="ww-entered"></td><td class="bad">incorrect</td></tr></tbody></table>
+        <div data-bw-x id="bw-out"><p class="quiet-note">Type an answer or pick one of the examples.</p></div>
       </div>
+    </div>
+  </section>
+
+  <section class="screen flip" id="themes" aria-labelledby="themes-h">
+    <div class="copy">
+      <h2 id="themes-h" data-rise>Dark mode, and a few other looks</h2>
+      <p data-rise>It goes dark when your computer does. If you'd rather pick, click a theme below and this page switches to it so you can see how your homework would look.</p>
       <p class="muted ww-only">Turn BetterWebWork back on to pick a theme.</p>
-      <p class="muted">Themes are plain JSON in the Pocket theme format, so a theme made for Collegiapp or PocketCanvas works here too. The settings can also ask a chatbot to make one for you.</p>
-    </section>
+      <p data-bw-x data-rise><button type="button" class="btn quiet" id="reset" hidden>Go back to following my computer</button></p>
+    </div>
+    <ul class="grid" id="grid" data-bw-x></ul>
+  </section>
 
-    <section class="problem" id="install" aria-labelledby="install-h" data-problem>
-      <p class="eyebrow"><b>Problem 4</b> <span>1 point</span></p>
-      <h2 id="install-h">Install</h2>
-      <p>One extension for Firefox 128+, Chrome 111+ and Edge. Once it's on, open any WeBWorK problem; there's nothing to set up.</p>
-      <p class="pending" data-until-stores>The store listings are in review. Until they're up, load it from the source in a minute:</p>
+  <section class="screen" id="set" aria-labelledby="set-h">
+    <div class="copy">
+      <h2 id="set-h" data-rise>Your sets, in plain words</h2>
+      <p data-rise>The set page shows what you've finished and what's still half done, and the due date reads like "Thu 11:59 PM, in 4 days" instead of a timestamp. If you refresh halfway through a problem, what you'd typed is still in the blanks. On your last attempt, Submit asks you to press it a second time before it counts.</p>
+    </div>
+    <figure class="shot crop" data-rise="side">
+      <img src="img/set.png" width="1280" height="800" loading="lazy" alt="A WeBWorK set page with BetterWebWork: the due date in words, a bar of what's correct, partly correct and wrong, and each problem's attempts and score.">
+    </figure>
+  </section>
+
+  <section class="screen last" id="install" aria-labelledby="install-h">
+    <div class="inner">
+      <h2 id="install-h" data-rise>Install it</h2>
+      <p class="lede" data-rise>It's free and there's no account. The extension doesn't send anything anywhere, and your answers reach WeBWorK exactly as they would without it. Once it's installed, open a WeBWorK problem and it's already on.</p>
+      <p class="pending" data-until-stores>The store listings are in review. Until they're up, you can load it from the source.</p>
       <div class="install">
-        <div class="card" data-browser="firefox">
+        <div class="card" data-browser="firefox" data-rise>
           <h3>Firefox <span class="tag" data-here hidden>You're using this</span></h3>
-          <a class="btn" href="{{firefox}}" data-store><i data-ic="download"></i><span>Get it for Firefox</span></a>
-          <p class="muted" data-store>From Firefox Add-ons, for Firefox 128 or later.</p>
+          <a class="btn big" href="{{firefox}}" data-store><i data-ic="download"></i><span>Add to Firefox</span></a>
+          <p class="muted" data-store>Firefox 128 or newer.</p>
           <ol data-until-stores>
             <li>Download the code from <a href="https://github.com/imanimal/betterwebwork/archive/refs/heads/main.zip">GitHub</a> and unzip it.</li>
             <li>Open <code>about:debugging#/runtime/this-firefox</code>.</li>
             <li>Click <b>Load Temporary Add-on</b> and pick <code>manifest.json</code>. It stays until Firefox restarts.</li>
           </ol>
         </div>
-        <div class="card" data-browser="chrome">
+        <div class="card" data-browser="chrome" data-rise>
           <h3>Chrome and Edge <span class="tag" data-here hidden>You're using this</span></h3>
-          <a class="btn" href="{{chrome}}" data-store><i data-ic="download"></i><span>Get it for Chrome</span></a>
-          <p class="muted" data-store>From the Chrome Web Store, for Chrome 111 or later and Edge.</p>
+          <a class="btn big" href="{{chrome}}" data-store><i data-ic="download"></i><span>Add to Chrome</span></a>
+          <p class="muted" data-store>Chrome 111 or newer. Edge installs it from the same page.</p>
           <ol data-until-stores>
             <li>Download the code from <a href="https://github.com/imanimal/betterwebwork/archive/refs/heads/main.zip">GitHub</a> and unzip it.</li>
             <li>Open <code>chrome://extensions</code> (or <code>edge://extensions</code>) and turn on <b>Developer mode</b>.</li>
@@ -189,87 +150,21 @@
           </ol>
         </div>
       </div>
-    </section>
+      <p class="muted" data-rise>It runs on any WeBWorK site with <code>/webwork2/</code> in the address. If a page looks off, you can turn it off for that site from the toolbar and <a href="https://github.com/imanimal/betterwebwork/issues">tell me on GitHub</a>.</p>
+    </div>
 
-    <section class="problem" id="questions" aria-labelledby="questions-h" data-problem>
-      <p class="eyebrow"><b>Problem 5</b> <span>1 point</span></p>
-      <h2 id="questions-h">Questions about WeBWorK</h2>
-      <div class="faq">
-        <details>
-          <summary>Why does WeBWorK mark my answer incorrect when I think it's right?</summary>
-          <div><p>Usually because WeBWorK read what you typed differently from how you meant it. The common ones:</p>
-          <ul>
-            <li><code>e^-2x</code> is read as <code>(e^-2)·x</code>. Write <code>e^(-2x)</code>.</li>
-            <li><code>x^1/2</code> is read as <code>(x^1)/2</code>. Write <code>x^(1/2)</code> or <code>sqrt(x)</code>.</li>
-            <li><code>sin x</code> without parentheses can be read as <code>sin</code> of only part of what follows. Write <code>sin(x)</code>.</li>
-            <li><code>1/2x</code> is ambiguous. Write <code>1/(2x)</code> or <code>(1/2)x</code>.</li>
-            <li>A decimal rounded too early, like <code>0.33</code> for 1/3. WeBWorK usually wants about 0.1% accuracy, so give 4 or more significant digits or the exact value.</li>
-          </ul>
-          <p>Press <b>Preview My Answers</b> first: it shows how WeBWorK read your answer and doesn't use an attempt. The full list is in <a href="answers/">How to type answers in WeBWorK</a>.</p></div>
-        </details>
-        <details>
-          <summary>How do I type square roots, exponents, pi and infinity in WeBWorK?</summary>
-          <div><p><code>sqrt(x)</code> for a square root, <code>^</code> for a power (<code>x^2</code>, <code>e^(3x)</code>), <code>pi</code> for π, <code>inf</code> for infinity, <code>*</code> for times, and <code>abs(x)</code> for an absolute value. <code>ln(x)</code> and <code>log(x)</code> are both the natural log; base 10 is <code>log10(x)</code>. See the <a href="answers/">cheat sheet</a> for intervals, points and vectors.</p></div>
-        </details>
-        <details>
-          <summary>Does WeBWorK have a dark mode?</summary>
-          <div><p>WeBWorK's own theme is light only. BetterWebWork adds Paper Dark, which turns on with your system's dark mode, on a schedule, or always. Graphs get a light panel behind them so their lines stay visible.</p></div>
-        </details>
-        <details>
-          <summary>What's the difference between Preview, Check and Submit?</summary>
-          <div><p><b>Preview My Answers</b> shows how WeBWorK read what you typed and doesn't count as an attempt. <b>Check Answers</b>, when your instructor allows it, tells you which answers are right without recording a score. <b>Submit Answers</b> records your score and uses an attempt. With BetterWebWork, <kbd>Ctrl</kbd>+<kbd>Enter</kbd> previews and <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd> submits.</p></div>
-        </details>
-        <details>
-          <summary>Will I lose my answers if I refresh a WeBWorK page?</summary>
-          <div><p>WeBWorK keeps the answers you submit, but answers you typed and haven't sent yet can be lost on a refresh or when you open another problem. BetterWebWork saves the blanks as you type and puts them back, with a note and Undo.</p></div>
-        </details>
-        <details>
-          <summary>What does "Can't generate enough valid points for comparison" mean?</summary>
-          <div><p>WeBWorK checks a formula by plugging numbers into yours and the correct one. This message means yours couldn't be worked out at enough of them, often a square root or log of a negative number, or a division by zero. Check the domain of each piece. More messages are explained in <a href="answers/#messages">WeBWorK's error messages</a>.</p></div>
-        </details>
-        <details>
-          <summary>Does BetterWebWork change my grade or give answers?</summary>
-          <div><p>No. It never changes what's sent to WeBWorK, and its notes only say what's certain from what you typed and from WeBWorK's message. It never guesses at the right answer, which the page doesn't have until WeBWorK shows it.</p></div>
-        </details>
-        <details>
-          <summary>Does it work with my school's WeBWorK?</summary>
-          <div><p>It runs on any address with <code>/webwork2/</code> in it. It's built against WeBWorK 2.18 and also reads 2.19's feedback. If a page looks wrong, the switch in the toolbar turns it off for that site, and you can <a href="https://github.com/imanimal/betterwebwork/issues">report it on GitHub</a>.</p></div>
-        </details>
-        <details>
-          <summary>What does it store, and where?</summary>
-          <div><p>Your settings, themes and attempt log stay in your browser's extension storage. Answers you haven't submitted yet stay in the WeBWorK site's own storage in your browser. Nothing is sent anywhere. The full <a href="https://github.com/imanimal/betterwebwork/blob/main/PRIVACY.md">privacy policy</a> is short.</p></div>
-        </details>
-      </div>
-    </section>
-  </main>
-</div>
-
-<footer class="foot">
-  <p>BetterWebWork {{version}}, MIT license</p>
-  <p><a href="answers/">How to type answers in WeBWorK</a></p>
-  <p><a href="https://github.com/imanimal/betterwebwork">Source on GitHub</a></p>
-  <p><a href="https://github.com/imanimal/betterwebwork/blob/main/PRIVACY.md">Privacy</a></p>
-  <p data-bw-x>Press <kbd>?</kbd> for shortcuts</p>
-  <p class="fine">BetterWebWork is an independent project. It isn't affiliated with WeBWorK, the MAA or any school.</p>
-</footer>
+    <footer class="foot">
+      <p>BetterWebWork {{version}}, MIT license</p>
+      <p><a href="answers/">How to type answers in WeBWorK</a></p>
+      <p><a href="https://github.com/imanimal/betterwebwork">Source on GitHub</a></p>
+      <p><a href="https://github.com/imanimal/betterwebwork/blob/main/PRIVACY.md">Privacy</a></p>
+      <p class="fine">BetterWebWork is an independent project. It isn't affiliated with WeBWorK, the MAA or any school.</p>
+    </footer>
+  </section>
+</main>
 
 <p class="offnote" role="status">This is the page without BetterWebWork. <button type="button" class="btn" id="backon">Turn it back on</button></p>
 <p class="toast" id="toast" role="status"></p>
-
-<dialog class="sheet-dlg" id="keys" aria-labelledby="keys-h">
-  <h2 id="keys-h">Shortcuts</h2>
-  <p class="muted">In WeBWorK, with BetterWebWork on. The ones marked work here too.</p>
-  <dl>
-    <dt><kbd>Ctrl</kbd> <kbd>Enter</kbd></dt><dd>Preview my answers</dd>
-    <dt><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Enter</kbd></dt><dd>Check answers</dd>
-    <dt><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>Enter</kbd></dt><dd>Submit answers</dd>
-    <dt><kbd>[</kbd> <kbd>]</kbd></dt><dd>Previous and next problem <span class="here">Here too</span></dd>
-    <dt><kbd>/</kbd></dt><dd>Filter the course list</dd>
-    <dt><kbd>?</kbd></dt><dd>Show the shortcuts <span class="here">Here too</span></dd>
-    <dt><kbd>Esc</kbd></dt><dd>Close a menu or panel <span class="here">Here too</span></dd>
-  </dl>
-  <form method="dialog"><button class="btn quiet">Close</button></form>
-</dialog>
 
 <script src="lib/icons.js"></script>
 <script src="lib/advice.js"></script>

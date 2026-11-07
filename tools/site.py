@@ -34,6 +34,7 @@ COPY = {
     "img/icon-128.png": "icons/icon-128.png",
     "img/problem-checked.png": "store/screenshots/1-problem-checked.png",
     "img/problem-dark.png": "store/screenshots/2-problem-dark.png",
+    "img/set.png": "store/screenshots/3-set.png",
     "img/social.png": "store/promo/marquee-promo-1400x560.png",
 }
 # The demo: the test fixtures (WeBWorK 2.18 pages running the extension's scripts, with tests/fixtures/shim.js in place
