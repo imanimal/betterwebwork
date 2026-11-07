@@ -1,12 +1,26 @@
 /* A stand-in for PG 2.18's MathView (htdocs/js/MathView/mathview.js) on the problem fixture: it wraps the answers
    marked data-mv the way MathView does (div.mv-container.input-group around the input and button.codeshard-btn, the
    popover inside the same div) and opens the Equation Editor popover and its Operations menu without Bootstrap's JS,
-   placed where Popper puts them (the popover to the right of the key, the menu under its toggle, start-aligned). */
+   placed where Popper puts them (the popover to the right of the key, the menu under its toggle, start-aligned).
+   Like MathView, it then watches the page and wraps the answers inside any element added later, skipping only an added
+   element that is itself marked data-mv-initialized: moving an answer's div.mv-container makes a new one around it,
+   which is added in turn, without end (here it stops at 40 and says so in the console). */
 (function () {
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; };
   const CATS = { Basic: ["a+b", "a-b", "a·b", "a/b", "|a|", "√a"], Exponents: ["a^b", "e^a"], Trigonometry: ["sin", "cos", "tan"], "Inverse Trig": ["asin", "acos"], Logarithms: ["ln", "log"], Intervals: ["(a,b)", "[a,b]"], Others: ["π", "∞"] };
   let n = 0;
-  for (const field of document.querySelectorAll("input[data-mv]")) {
+  for (const field of document.querySelectorAll("input[data-mv]")) attach(field);
+  new MutationObserver((list) => {
+    for (const m of list) for (const node of m.addedNodes) {
+      if (!(node instanceof Element) || node.dataset.mvInitialized === "true") continue;
+      if (node.matches("input[data-mv]")) attach(node);
+      else node.querySelectorAll("input[data-mv]").forEach(attach);
+    }
+  }).observe(document.body, { childList: true, subtree: true });
+
+  function attach(field) {
+    if (n >= 40) { if (n++ === 40) console.error("fixture MathView: still wrapping answers after 40 editors; something keeps moving one"); return; }
+    field.dataset.mvInitialized = "true";
     const id = `mv${n++}`;
     const container = el("div", "mv-container input-group d-inline-flex flex-nowrap w-auto");
     field.after(container);

@@ -55,15 +55,17 @@ BetterWebWork is an independent project. It isn't affiliated with WeBWorK, the M
 
 **Store icon:** `icons/icon-128.png`. Google suggests 96×96 artwork inside 16 px of transparent padding; this one fills the square, which the store accepts.
 
-**Screenshots:** 1280×800 (or 640×400), 1 to 5, square corners. The five below are in `store/screenshots/`, numbered in this order; addons.mozilla.org takes the same files. They come from the fixture pages with MathJax added (the fixtures don't load WeBWorK's) and the instructor's login cut from the course title. To retake them, take them in Chrome with DevTools' device toolbar set to 1280×800, then **Capture screenshot** from the ⋮ menu. Use a page with no real classmate or instructor names, or the fixture pages (`python -m http.server 4799` in this folder, then `http://127.0.0.1:4799/tests/fixtures/webwork2/`) after replacing the name in the bar. In order:
+**Screenshots:** 1280×800 (or 640×400), 1 to 5, square corners. The five below are in `store/screenshots/`, numbered in this order; addons.mozilla.org takes the same files. They come from the fixture pages with MathJax added (the fixtures don't load WeBWorK's), MathQuill's one-box layout for answer boxes (the fixtures' stand-in leaves its textarea showing) and the instructor's login cut from the course title. To retake them, take them in Chrome with DevTools' device toolbar set to 1280×800, then **Capture screenshot** from the ⋮ menu. Use a page with no real classmate or instructor names, or the fixture pages (`python -m http.server 4799` in this folder, then `http://127.0.0.1:4799/tests/fixtures/webwork2/`) after replacing the name in the bar. In order:
 
 1. A problem after **Check answers**, with marks on the blanks and the results list (Paper).
-2. The same page in Paper Dark.
+2. The same page in Paper Dark, scrolled to the problem: each blank with its mark beside it.
 3. A set page: due date in words, progress, the next-problem key.
 4. A course's set list or the course list.
 5. The settings drawer on the Themes section, with a Pocket theme applied.
 
-**Promo tiles and video:** optional; leave empty.
+**Promo tiles:** optional, but the small tile is what the store shows in search, category and featured rows. Upload `store/promo/small-promo-440x280.png` and `store/promo/marquee-promo-1400x560.png` (the marquee only shows if Google features the extension on the home page). Both are 24-bit PNGs on the icon's ink field, in Atkinson Hyperlegible Next.
+
+**Promo video:** optional; leave empty.
 
 **Homepage URL:** `https://github.com/imanimal/betterwebwork`
 

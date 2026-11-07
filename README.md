@@ -4,6 +4,10 @@ A Firefox and Chrome extension that gives WeBWorK a cleaner, calmer page. It res
 
 It works on any WeBWorK whose address has `/webwork2/` in it (built against 2.18, the version UCSB runs, and reads 2.19's feedback too).
 
+- **Website:** https://imanimal.github.io/betterwebwork/
+- **Live demo, no install or WeBWorK login:** [a sample homework problem](https://imanimal.github.io/betterwebwork/demo/webwork2/math4a-01-f26-blee/Week_1/3/), a saved WeBWorK 2.18 page running the extension's own scripts. Problems 1, 3 and 4, the set, the course and the course list are there too. Answers there go nowhere.
+- **Install:** [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/betterwebwork/), [Chrome Web Store](https://chromewebstore.google.com/detail/betterwebwork/hogfngmddcjkemnfmdamdhegaioakcan) (Edge installs from there too).
+
 ## What changes
 
 **Problem pages**
@@ -12,8 +16,8 @@ It works on any WeBWorK whose address has `/webwork2/` in it (built against 2.18
 - The problem is centered on a single sheet. An equation wider than the sheet widens it instead of scrolling (only one wider than the window scrolls). Graphs get a light panel on dark themes so their lines stay visible.
 - A blank stays on the same line as the maths that labels it (`y(x) =` and its box wrap together), and a part that starts on a new line, like "(2) The unique solution…", gets a little room above it. The Equation Editor opens over the page, never cut off inside the sheet.
 - The set's problems sit in a strip above the sheet, each marked correct, partly correct, wrong or not started. `[` and `]` move between them.
-- Score, attempts, attempts left and the due date sit in one row instead of a paragraph.
-- After you check or submit, each blank gets a mark beside it. The results list shows what you typed, how WeBWorK read it, WeBWorK's own message, and short notes on common slips: `e^-2x` read as `(e^-2)·x`, `sin x` without parentheses, `x^1/2`, unbalanced brackets, symbols WeBWorK doesn't take, rounding too early. The notes are labeled as BetterWebWork's, not WeBWorK's, and stay quiet when there's nothing certain to say.
+- Score, attempts, attempts left and the due date sit in one row instead of a paragraph. Once a problem is at 100%, "You can earn partial credit on this problem" goes away.
+- After you check or submit, each blank gets a mark beside it. The results list shows what you typed, how WeBWorK read it, WeBWorK's own message, and short notes on common slips: `e^-2x` read as `(e^-2)·x`, `sin x` without parentheses, `x^1/2`, unbalanced brackets, symbols WeBWorK doesn't take, rounding too early. The notes are labeled as BetterWebWork's, not WeBWorK's, and stay quiet when there's nothing certain to say. Some problems don't say which answers are right on a submit, only whether all of them are; the list says that too.
 - If you type an answer that was already marked wrong, a small notice says when.
 - What you type in the blanks is kept until you submit it, so a refresh or a trip to another problem doesn't lose it. When it's put back, a note says so, with Undo.
 - On your last attempt, Submit asks for a second press.
@@ -35,6 +39,17 @@ It works on any WeBWorK whose address has `/webwork2/` in it (built against 2.18
 - Reading settings: typeface (Atkinson Hyperlegible or your system's), problem text size, page width, how graphs show on dark themes, motion, 24-hour clock.
 - Turn it off for one site from the toolbar button; the page goes back to WeBWorK's own look without a reload.
 
+## How it works
+
+A Manifest V3 extension in plain JavaScript and CSS: no framework, no bundler, no npm. One source tree and one `manifest.json` load in both Firefox and Chrome, and `tools/build.py` writes each store's package from them.
+
+- **Restyle, never replace.** The content scripts hide or move WeBWorK's own elements and never delete them, so every form posts exactly as WeBWorK wrote it, and turning the extension off puts the page back without a reload.
+- **No flash of the old page.** `boot.js` runs before the page draws and paints the saved look from a copy in the page's own storage; `app.js` builds the rest once the page is ready.
+- **Reading WeBWorK.** `ww.js` reads the route, set statuses, score lines and attempt results out of WeBWorK's HTML. `advice.js` turns what you typed and how WeBWorK parsed it into notes, and only says what's certain. `page.js` runs inside the page itself, the only way to reach its MathJax and MathQuill.
+- **Drafts.** What you type is written synchronously to the page's localStorage as you type and when the page closes, since an asynchronous write may not land before the page goes.
+- **Tests.** `tests/core.test.js` (Node's test runner) covers the parsing, the notes, themes and drafts. `tests/fixtures/` holds saved WeBWorK 2.18 pages that load the real content scripts with a stand-in for the browser's extension APIs; the website's live demo is those same pages.
+- **Shipping.** GitHub Actions publish the website to GitHub Pages on every push to `main`, and a version tag sends the packages to the Chrome Web Store (its API) and Firefox Add-ons (`web-ext sign`).
+
 ## Keyboard
 
 | Keys | Does |
@@ -49,12 +64,12 @@ It works on any WeBWorK whose address has `/webwork2/` in it (built against 2.18
 
 ## Install
 
-BetterWebWork runs in Firefox 128+ and Chrome 111+ (Edge too) from the same files. It isn't in either store yet. To try it from this folder:
+BetterWebWork runs in Firefox 128+ and Chrome 111+ (Edge too) from the same files. Get it from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/betterwebwork/) or the [Chrome Web Store](https://chromewebstore.google.com/detail/betterwebwork/hogfngmddcjkemnfmdamdhegaioakcan) (Edge installs from there too). To run it from this folder instead:
 
 - **Firefox:** open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on** and pick `manifest.json`. It lasts until Firefox restarts.
 - **Chrome or Edge:** open `chrome://extensions` (`edge://extensions`), turn on **Developer mode**, click **Load unpacked** and pick this folder.
 
-For a permanent install, build the zips (below) and submit them. On addons.mozilla.org choose **On this site** to list it there: Mozilla signs it, reviews it and sends updates. To hand out the signed file yourself instead, build with `--self-hosted` and choose **On your own**. The Chrome zip goes to the Chrome Web Store (a one-time $5 developer registration) and, unchanged, to Edge Add-ons (free).
+For a permanent install, tagged releases go to the Chrome Web Store and addons.mozilla.org (see [Releases](#releases)); the Chrome zip also goes, unchanged, to Edge Add-ons. To hand out a signed Firefox file yourself instead, build with `--self-hosted` and choose **On your own** on addons.mozilla.org.
 
 ## Privacy
 
@@ -103,13 +118,73 @@ python tools/build.py
 
 That writes both store packages from the one `manifest.json`: `dist/betterwebwork-<version>-firefox.zip` for addons.mozilla.org and `dist/betterwebwork-<version>-chrome.zip` for the Chrome Web Store and Edge Add-ons. Each keeps only its own browser's manifest keys (Firefox's `background.scripts` and add-on ID; Chrome's service worker and minimum version). `--self-hosted` also writes `betterwebwork-<version>-firefox-self-hosted.zip`, whose manifest points Firefox at the latest GitHub release's `updates.json` for updates, and writes that `updates.json` too. Mozilla refuses that update address on a listed add-on, so only this build carries it.
 
-A release is one command and two uploads:
+What to enter in the Chrome Web Store dashboard (description, permission justifications, privacy answers) is in [store/chrome-web-store.md](store/chrome-web-store.md). `tools/gen_icons.py` draws the icons and `tools/vendor_fonts.py` fetches the fonts (both already run; their output is checked in).
+
+## Releases
+
+Pushing a tag `v<version>` releases that version to both stores. [.github/workflows/release.yml](.github/workflows/release.yml) runs the tests, checks the tag against `manifest.json`, builds the two zips, then:
+
+- **Chrome:** `tools/cws.py` uploads the `-chrome.zip` through the Chrome Web Store API and submits it. It goes out when Google's review passes.
+- **Firefox:** `web-ext sign --channel listed` submits the `-firefox.zip` to addons.mozilla.org. Mozilla signs and reviews it and sends it to installed copies. The first one also creates the listing from [store/amo-metadata.json](store/amo-metadata.json).
+- **GitHub:** a release for the tag with both zips.
 
 ```bash
 python tools/build.py --bump 0.2.0
 ```
 
-Upload the `-firefox.zip` as a new version on addons.mozilla.org and the `-chrome.zip` as a new package in the Chrome Web Store dashboard (and Edge Partner Center). Both carry the same version number. What to enter in the Chrome Web Store dashboard (description, permission justifications, privacy answers) is in [store/chrome-web-store.md](store/chrome-web-store.md). `tools/gen_icons.py` draws the icons and `tools/vendor_fonts.py` fetches the fonts (both already run; their output is checked in).
+```bash
+git commit -am "Release 0.2.0" && git tag v0.2.0 && git push origin main v0.2.0
+```
+
+Edge Add-ons isn't automated: upload the same `-chrome.zip` in Partner Center by hand.
+
+### One-time setup
+
+Chrome Web Store:
+
+1. The item has to exist first, because the API only updates an item. BetterWebWork's first version (0.1.3) was uploaded by hand, with the Store listing and Privacy tabs filled in from [store/chrome-web-store.md](store/chrome-web-store.md). Each later tag needs a higher version than the store has. A version still in review can block a new submission, so tag the next one after that review ends.
+2. Turn on 2-step verification for the Google account. Google requires it to publish.
+3. In the [Google Cloud console](https://console.cloud.google.com/), create or pick a project, search for "Chrome Web Store API" and enable it.
+4. In [IAM & Admin > Service accounts](https://console.cloud.google.com/iam-admin/serviceaccounts), create a service account. It needs no roles. Open it, go to **Keys > Add key > Create new key > JSON**, and keep the downloaded file for step 7.
+5. In the Developer Dashboard's **Account** section, add the service account's email (the `...@...iam.gserviceaccount.com` address). A publisher can have one.
+6. Note the publisher ID (Developer Dashboard, **Publisher > Settings**) and the item ID (the 32-letter ID of the BetterWebWork item, shown under its name in the dashboard and at the end of its store address).
+7. Store them in the repository, then delete the downloaded key file:
+
+```bash
+gh secret set CWS_SERVICE_ACCOUNT_JSON -R imanimal/betterwebwork < path/to/key.json
+```
+
+```bash
+gh variable set CWS_PUBLISHER_ID -R imanimal/betterwebwork
+```
+
+```bash
+gh variable set CWS_ITEM_ID -R imanimal/betterwebwork
+```
+
+addons.mozilla.org: one API key covers every add-on on the account, so PocketCanvas's key works here too ([get or regenerate it](https://addons.mozilla.org/developers/addon/api/key/)). `gh` asks for each value:
+
+```bash
+gh secret set AMO_JWT_ISSUER -R imanimal/betterwebwork
+```
+
+```bash
+gh secret set AMO_JWT_SECRET -R imanimal/betterwebwork
+```
+
+The first tagged release creates the AMO listing, so nothing is uploaded there by hand. Screenshots (the same ones in `store/screenshots/`) and a longer description can be added on the listing later.
+
+If the Chrome Web Store's visibility settings are changed in the dashboard, publish once by hand with the new setting before the API can publish again.
+
+## Website
+
+The site at https://imanimal.github.io/betterwebwork/ is built from `site/`: the home page and a guide to typing answers in WeBWorK (`site/answers/`). It runs the extension's own `themes.js`, `icons.js` and `advice.js`, copied in by the build, so its "Try a wrong answer" notes and theme picker are the extension's. The build also copies the fixtures and `src/` into `demo/`, the live demo, moving their root paths under the site's address (`tests/fixtures/shim.js` finds its root from the page's `kit.css` link).
+
+```bash
+python tools/site.py
+```
+
+That writes `dist/site/`. Serve that folder to look at it (`python -m http.server 4807 --directory dist/site`). [.github/workflows/pages.yml](.github/workflows/pages.yml) builds and publishes it on every push to `main` that touches it; turn on **Settings > Pages > Source: GitHub Actions** once. The store addresses live in `STORES` in `tools/site.py`; each install key on the site goes to the store for the browser it's opened in. Emptying them brings back the load-it-yourself steps.
 
 ## Credits
 

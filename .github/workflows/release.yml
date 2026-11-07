@@ -1,0 +1,95 @@
+# Push a tag like v0.2.0 (after `python tools/build.py --bump 0.2.0`) to release that version to both stores.
+# Chrome: tools/cws.py uploads the -chrome.zip through the Chrome Web Store API and submits it for review.
+#   Needs the secret CWS_SERVICE_ACCOUNT_JSON and the variables CWS_PUBLISHER_ID, CWS_ITEM_ID.
+# Firefox: web-ext submits the -firefox.zip to addons.mozilla.org as a listed version; Mozilla signs it,
+#   reviews it and sends it to installed copies. The first one also creates the listing from store/amo-metadata.json.
+#   Needs the secrets AMO_JWT_ISSUER, AMO_JWT_SECRET (https://addons.mozilla.org/developers/addon/api/key/).
+# The README's "Releases" section has the one-time setup.
+name: Release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - run: node --test tests/core.test.js
+      - name: Check the tag matches manifest.json
+        run: |
+          v=$(python3 -c "import json; print(json.load(open('manifest.json'))['version'])")
+          test "v$v" = "${GITHUB_REF_NAME}" || { echo "Tag ${GITHUB_REF_NAME} but manifest.json says $v"; exit 1; }
+      - run: python3 tools/build.py
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: packages
+          path: dist/*.zip
+          if-no-files-found: error
+
+  chrome:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: packages
+          path: dist
+      - name: Upload and publish to the Chrome Web Store
+        env:
+          CWS_SERVICE_ACCOUNT_JSON: ${{ secrets.CWS_SERVICE_ACCOUNT_JSON }}
+          CWS_PUBLISHER_ID: ${{ vars.CWS_PUBLISHER_ID }}
+          CWS_ITEM_ID: ${{ vars.CWS_ITEM_ID }}
+        run: python3 tools/cws.py dist/betterwebwork-${GITHUB_REF_NAME#v}-chrome.zip
+
+  firefox:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: packages
+          path: dist
+      - name: Unpack the Firefox package
+        run: unzip -q "dist/betterwebwork-${GITHUB_REF_NAME#v}-firefox.zip" -d dist/firefox
+      - run: npx -y web-ext@8.3.0 lint --source-dir dist/firefox
+      - name: Submit to addons.mozilla.org (listed)
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.AMO_JWT_ISSUER }}
+          WEB_EXT_API_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          # Metadata is required only for the first listed version; skip it once the listing is public.
+          code=$(curl -s -o /dev/null -w '%{http_code}' https://addons.mozilla.org/api/v5/addons/addon/bww@imanimal.github.io/)
+          meta=()
+          if [ "$code" != 200 ]; then meta=(--amo-metadata store/amo-metadata.json); fi
+          # A listed version is signed after review and served by AMO, so don't wait to download it.
+          npx -y web-ext@8.3.0 sign --channel listed --source-dir dist/firefox "${meta[@]}" \
+            --artifacts-dir web-ext-artifacts --approval-timeout 0
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: packages
+          path: dist
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v=${GITHUB_REF_NAME#v}
+          gh release create "${GITHUB_REF_NAME}" "dist/betterwebwork-$v-chrome.zip" "dist/betterwebwork-$v-firefox.zip" \
+            -R "${GITHUB_REPOSITORY}" --title "BetterWebWork $v" --latest \
+            --notes "Sent to the Chrome Web Store and addons.mozilla.org; each store's copy updates itself once its review passes. The zips are the packages as submitted."

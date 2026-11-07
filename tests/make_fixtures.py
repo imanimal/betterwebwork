@@ -6,11 +6,13 @@ the extension's scripts in the order the manifest injects them and tests/fixture
     http://127.0.0.1:4799/tests/fixtures/webwork2/                              the course list
     http://127.0.0.1:4799/tests/fixtures/webwork2/math4a-01-f26-blee/           a course
     http://127.0.0.1:4799/tests/fixtures/webwork2/math4a-01-f26-blee/Week_1/    a set
+    http://127.0.0.1:4799/tests/fixtures/webwork2/math4a-01-f26-blee/Week_1/1/  a problem after Submit, all correct, not marked one by one
     http://127.0.0.1:4799/tests/fixtures/webwork2/math4a-01-f26-blee/Week_1/3/  a problem after Check Answers
     http://127.0.0.1:4799/tests/fixtures/webwork2/math4a-01-f26-blee/Week_1/4/  the next problem, opened fresh
 
 The markup follows WeBWorK's templates (system.html.ep, Problem.html.ep, AttemptsTable.pm, ProblemSet, ProblemSets);
-MathJax isn't loaded, so maths shows as TeX; tests/fixtures/mathview.js stands in for PG's MathView on answers (a) and (b). Keep the script lists in step with manifest.json."""
+tests/fixtures/mathjax.js stands in for MathJax (maths shows as TeX, in the mjx-container elements MathJax makes);
+tests/fixtures/mathview.js stands in for PG's MathView on answers (a) and (b), page watcher included. Keep the script lists in step with manifest.json."""
 import json
 import os
 
@@ -52,6 +54,7 @@ def page(title, crumbs, body, nav="", sidebar=True, info=None, problem_nav=""):
 <!-- BetterWebWork at document_start -->
 {css}
 <script src="/tests/fixtures/shim.js"></script>
+<script src="/tests/fixtures/mathjax.js"></script>
 {js_start}
 <title>WeBWorK : {title}</title>
 </head>
@@ -182,7 +185,8 @@ def problem():
 <p>(d) The graph below shows \\(h\\). Estimate \\(h(1)\\) to four significant digits: <input type="text" class="codeshard partially-correct" size="10" name="AnSwEr0004" id="AnSwEr0004" aria-label="answer 4" value="0.33" autocomplete="off"><input type="hidden" name="previous_AnSwEr0004" value="0.33"></p>
 <p><img src="{graph}" class="image-view-elt" width="300" height="180" alt="Graph of h"></p>
 <p><a class="knowl" data-bs-toggle="collapse" href="#hint1">Hint</a></p><div id="hint1" class="collapse"><div class="knowl-output"><div class="knowl-content">Expand the square first.</div></div></div>
-</div></div></div>
+</div></div>
+<p><b>Note:</b> <i>You can earn partial credit on this problem.</i></p></div>
 <script src="/tests/fixtures/mathview.js"></script>
 <div class="checkboxes-container col-12 my-2"></div>
 <div class="submit-buttons-container col-12 my-2">
@@ -191,13 +195,58 @@ def problem():
 <input type="submit" id="checkAnswers_id" name="checkAnswers" value="Check Answers" class="btn btn-primary mb-1" formtarget="_self">
 <input type="submit" id="submitAnswers_id" name="submitAnswers" value="Submit Answers" class="btn btn-primary mb-1" formtarget="_self">
 </div>
-<div id="score_summary" class="scoreSummary"><p>You have attempted this problem 3 times.<br>Your overall recorded score is 33%.<br>You have 1 attempt remaining.<br>You can earn partial credit on this problem.</p></div>
+<div id="score_summary" class="scoreSummary"><p>You have attempted this problem 3 times.<br>Your overall recorded score is 33%.<br>You have 1 attempt remaining.</p></div>
 </form></div></div>
 <div id="problemFooter" class="problemFooter"><form method="POST" action="#"><button type="submit" class="btn btn-primary">Show Past Answers</button></form><form method="POST" action="#"><button type="submit" class="btn btn-primary">Email Instructor</button></form></div>"""
     title = '<span dir="ltr">Week 1</span>: Problem 3<span class="problem-sub-header d-block">(2 points)</span>'
     write(f"{C}/Week_1/3", page(title.replace('<span class="problem-sub-header d-block">(2 points)</span>', ""), [("WeBWorK", f"{B}/"), (C, f"{B}/{C}/"), ("Week_1", f"{B}/{C}/Week_1/"), ("3", None)], body, nav=nav, problem_nav=pnav)
           .replace('<h1 id="page-title" class="page-title">' + title.replace('<span class="problem-sub-header d-block">(2 points)</span>', ""), '<h1 id="page-title" class="page-title">' + title)
           .replace("<title>WeBWorK : " + title.replace('<span class="problem-sub-header d-block">(2 points)</span>', ""), f"<title>WeBWorK : {C} : Week_1 : 3"))
+
+
+def problem_done():
+    """Problem 1 just after Submit Answers, all correct, on a problem that doesn't mark answers one by one
+    (PG's showPartialCorrectAnswers = 0): WeBWorK 2.18 drops the Result column on a submit then, and only the summary
+    under the table says the answers are right. The partial credit note stays under the problem, as WeBWorK writes it."""
+    sib_items = []
+    for n, mark in [(1, " &#x2713;"), (2, " &hellip;"), (3, " &#x2717;"), (4, ""), (5, " &#x2717;")]:
+        cur = n == 1
+        sib_items.append(f'<li class="nav-item"><a {"" if cur else f"href=\"{B}/{C}/Week_1/{n}/\" "}class="nav-link{" active" if cur else ""}">Problem {n}{mark}</a></li>')
+    nav = f"""<div id="siblings"><div class="info-box bg-light"><h2>Problems</h2>
+<ul class="nav flex-column problem-list">{"".join(sib_items)}</ul></div></div>"""
+    pnav = f"""<div class="row sticky-nav" role="navigation" aria-label="problem navigation"><div class="d-flex submit-buttons-container">
+<span class="btn btn-primary disabled">Previous Problem</span><a href="{B}/{C}/Week_1/" class="btn btn-primary">Problem List</a><a href="{B}/{C}/Week_1/2/" class="btn btn-primary">Next Problem</a></div></div>"""
+    body = f"""<div id="custom_edit_message" class="row"><div class="col-lg-10"></div></div>
+<div class="row"><div id="output_summary" class="col-lg-10">
+<div class="table-responsive"><table class="attemptResults table table-sm table-bordered">
+<tr><th>Entered</th><th>Answer Preview</th><th>Message</th></tr>
+<tr><td dir="auto">[-1,1]</td><td><div class="answer-preview" data-bs-toggle="popover" data-bs-content="[-1,1]">\\([-1,1]\\)</div></td><td>&nbsp;</td></tr>
+<tr><td dir="auto">0</td><td><div class="answer-preview" data-bs-toggle="popover" data-bs-content="0">\\(0\\)</div></td><td>&nbsp;</td></tr>
+</table></div>
+<div role="alert" class="attemptResultsSummary"><div class="ResultsWithoutError mb-2">All of the answers above are correct.</div></div>
+</div></div>
+<div class="row"><div class="col-lg-10">
+<form action="" method="POST" name="problemMainForm" id="problemMainForm" class="problem-main-form">
+<input type="hidden" name="user" value="alexk"><input type="hidden" name="startTime" value="1793595600">
+<div class="problem"><div id="problem_body" class="problem-content" lang="en" dir="ltr"><div id="output_problem_body">
+<p>Let \\(f(x) = \\sqrt{{1 - x^2}}\\).</p>
+<p>(a) The domain of \\(f\\) is <input type="text" class="codeshard" size="20" name="AnSwEr0001" id="AnSwEr0001" aria-label="answer 1" value="[-1,1]" autocomplete="off"><input type="hidden" name="previous_AnSwEr0001" value="[-1,1]"></p>
+<p>(b) \\(\\lim_{{x \\to 1^-}} f(x) =\\) <input type="text" class="codeshard" size="20" name="AnSwEr0002" id="AnSwEr0002" aria-label="answer 2" value="0" autocomplete="off"><input type="hidden" name="previous_AnSwEr0002" value="0"></p>
+</div></div>
+<p><b>Note:</b> <i>You can earn partial credit on this problem.</i></p></div>
+<div class="checkboxes-container col-12 my-2"></div>
+<div class="submit-buttons-container col-12 my-2">
+<input type="submit" id="enter_key_submit" name="previewAnswers" value="Preview My Answers" class="visually-hidden-unfocusable" formtarget="_self">
+<input type="submit" id="previewAnswers_id" name="previewAnswers" value="Preview My Answers" class="btn btn-primary mb-1" formtarget="_self">
+<input type="submit" id="checkAnswers_id" name="checkAnswers" value="Check Answers" class="btn btn-primary mb-1" formtarget="_self">
+<input type="submit" id="submitAnswers_id" name="submitAnswers" value="Submit Answers" class="btn btn-primary mb-1" formtarget="_self">
+</div>
+<div id="score_summary" class="scoreSummary"><p>Your score was recorded.<br>You have attempted this problem 2 times.<br>You received a score of 100% for this attempt.<br>Your overall recorded score is 100%.  <br>You have unlimited attempts remaining.</p></div>
+</form></div></div>"""
+    title = '<span dir="ltr">Week 1</span>: Problem 1'
+    write(f"{C}/Week_1/1", page(title, [("WeBWorK", f"{B}/"), (C, f"{B}/{C}/"), ("Week_1", f"{B}/{C}/Week_1/"), ("1", None)], body, nav=nav, problem_nav=pnav)
+          .replace(f'<h1 id="page-title" class="page-title">{title}', f'<h1 id="page-title" class="page-title">{title}<span class="problem-sub-header d-block">(1 point)</span>')
+          .replace(f"<title>WeBWorK : {title}", f"<title>WeBWorK : {C} : Week_1 : 1"))
 
 
 def problem_view():
@@ -246,5 +295,6 @@ if __name__ == "__main__":
     courses()
     course()
     problem_set()
+    problem_done()
     problem()
     problem_view()

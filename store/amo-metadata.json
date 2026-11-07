@@ -1,0 +1,7 @@
+{
+  "summary": {
+    "en-US": "A cleaner WeBWorK: centered problems, one-click navigation, plain-language answer feedback, saved drafts, dark mode and themes."
+  },
+  "categories": ["appearance"],
+  "version": { "license": "MIT" }
+}

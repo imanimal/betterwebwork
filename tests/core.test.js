@@ -131,6 +131,15 @@ test("score lines", () => {
   assert.equal(ww.score("").known, false);
 });
 
+test("what a results page is", () => {
+  assert.equal(ww.kind("PREVIEW ONLY -- ANSWERS NOT RECORDED", false, false), "preview");
+  assert.equal(ww.kind("ANSWERS ONLY CHECKED -- ANSWERS NOT RECORDED", true, true), "check");
+  assert.equal(ww.kind("", true, true), "submit");
+  // a submit on a problem that doesn't mark answers one by one (showPartialCorrectAnswers = 0): only the summary
+  assert.equal(ww.kind("", false, true), "submit");
+  assert.equal(ww.kind("", false, false), "preview");
+});
+
 test("part labels at the start of a line", () => {
   for (const s of ["(1) Let C1", " (2)", "(b) Find", "(iv) Show", "b) Find", "1. Find", "12. Then", "Part 3: Find", "Part (a)", "part b."]) assert.equal(ww.part(s), true, s);
   for (const s of ["a function", "(x+1) is", "(1, 2)", "3.5 is", "For −∞ type -inf", "Partial credit", "", null]) assert.equal(ww.part(s), false, String(s));
