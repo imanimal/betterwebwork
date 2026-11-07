@@ -35,7 +35,7 @@ node --test tests/core.test.js
 python tools/build.py
 ```
 
-That builds the Firefox and Chrome zips into `dist/`. `python tools/site.py` builds the website into `dist/site/`, and it publishes to GitHub Pages whenever `main` changes. Releases go out from a version tag; [RELEASING.md](RELEASING.md) covers that.
+That builds the Firefox and Chrome zips into `dist/`. `python tools/site.py` builds the website into `dist/site/`, and it publishes to GitHub Pages whenever `main` changes. Pushing a version tag releases it to both stores.
 
 ## Credits
 
