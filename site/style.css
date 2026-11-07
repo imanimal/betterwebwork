@@ -49,24 +49,25 @@ button, input, select { font: inherit; }
 .strip h2 { font-size: 1rem; padding: 8px 12px; margin: 0; background: #e9ecef; }
 .strip ol { list-style: none; margin: 0; padding: 0; }
 .strip li a { display: block; padding: 6px 12px; border-top: 1px solid #dee2e6; }
-.strip .meter, .strip .mark { display: none; }
+.strip .mark { display: none; }
 main { flex: 1; min-width: 0; }
 
 .problem { margin-bottom: 2rem; }
 .btn { display: inline-block; padding: 6px 12px; border: 1px solid #0d6efd; border-radius: 4px; background: #0d6efd; color: #fff; text-decoration: none; cursor: pointer; }
 .btn.quiet { background: #fff; color: #0d6efd; }
-.stats { display: flex; gap: 24px; flex-wrap: wrap; }
-.stats dt { font-weight: 700; }
-.stats dd { margin: 0; }
 .ww-table { border-collapse: collapse; width: 100%; }
 .ww-table th, .ww-table td { border: 1px solid #dee2e6; padding: 6px 10px; text-align: left; }
 .ww-table .bad { background: #f8d7da; } .ww-table .ok { background: #d1e7dd; }
 .try input[type=text] { padding: 4px 8px; border: 1px solid #ced4da; width: min(320px, 100%); }
-details { border: 1px solid #dee2e6; padding: 8px 12px; margin-bottom: -1px; }
-summary { cursor: pointer; font-weight: 500; }
 table.sheet { border-collapse: collapse; width: 100%; margin-bottom: 1.5rem; }
 table.sheet th, table.sheet td { border: 1px solid #dee2e6; padding: 6px 10px; text-align: left; vertical-align: top; }
 .foot { border-top: 1px solid #dee2e6; padding: 16px; font-size: .9rem; color: #6c757d; }
+body > main { display: block; padding: 0 16px; }
+.screen { margin-bottom: 2rem; }
+.shot { margin: 0 0 1rem; }
+.shot img { display: block; height: auto; }
+html:not([data-bw-on]) .shot .dark { display: none; }
+.dots { display: none; }
 
 /* the parts WeBWorK doesn't have, and WeBWorK's own parts we replace */
 html:not([data-bw-on]) :is([data-bw-x], .bw-i) { display: none !important; }
@@ -172,23 +173,14 @@ html[data-bw-on] .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 16px 4
 html[data-bw-on] main { max-width: 800px; }
 html[data-bw-on] .strip { position: sticky; top: 80px; flex-basis: 220px; border: 0; border-radius: var(--r); background: var(--bw-surface); box-shadow: var(--card); overflow: hidden; }
 html[data-bw-on] .strip h2 { background: none; font-size: 15px; padding: 14px 14px 2px; margin: 0; letter-spacing: 0; }
-html[data-bw-on] .strip .meter { display: block; padding: 0 14px 12px; border-bottom: 1px solid var(--bw-line); font-size: 13px; color: var(--bw-text3); }
-html[data-bw-on] .segs { display: flex; gap: 3px; margin-top: 6px; height: 5px; }
-html[data-bw-on] .segs i { flex: 1; border-radius: 3px; background: var(--bw-surface2); transition: background calc(var(--m) * .4s); }
-html[data-bw-on] .segs i.done { background: var(--bw-ok); }
-html[data-bw-on] .segs i.part { background: var(--bw-warn); }
 html[data-bw-on] .strip ol { padding: 6px; }
 html[data-bw-on] .strip li a { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border: 0; border-radius: var(--kr); color: var(--bw-text2); text-decoration: none; font-size: 15px; }
 html[data-bw-on] .strip li a:hover { background: var(--bw-surface2); color: var(--bw-text); }
 html[data-bw-on] .strip li a[aria-current] { background: var(--accent-soft); color: var(--bw-text); font-weight: 700; }
 html[data-bw-on] .strip .mark { display: inline-grid; place-items: center; width: 18px; height: 18px; color: var(--bw-text3); }
 html[data-bw-on] .strip .done .mark { color: var(--bw-ok); }
-html[data-bw-on] .strip .part .mark { color: var(--bw-warn); }
 html[data-bw-on] .strip .long { display: block; font-size: 13px; font-weight: 400; color: var(--bw-text3); line-height: 1.3; }
 html[data-bw-on] .strip li a > span:last-child { min-width: 0; }
-html[data-bw-on] .shot .dark, html[data-bw-on][data-bw-scheme="dark"] .shot .light { display: none; }
-html[data-bw-on][data-bw-scheme="dark"] .shot .dark { display: block; }
-html:not([data-bw-on]) .shot .dark { display: none; }
 html[data-bw-on] .strip .mark .bw-i { width: 16px; height: 16px; }
 html[data-bw-on] .strip .mark .bw-i:not(.line) { width: 13px; height: 13px; }
 html[data-bw-on] .strip .mark svg { animation: pop calc(var(--m) * .35s) ease-out; }
@@ -217,30 +209,10 @@ html[data-bw-on][data-bw-look="pocket"] .btn:active { transform: translateY(3px)
 html[data-bw-on] .keys { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 html[data-bw-on] .keys .muted { margin-left: 4px; }
 
-/* the set header */
 html[data-bw-on] .hero { padding-top: 12px; margin-bottom: 72px; }
 html[data-bw-on] .hero .keys { margin: 24px 0 28px; }
-html[data-bw-on] .stats { gap: 36px; padding: 18px 0 0; border-top: 1px solid var(--bw-line); margin: 0; }
-html[data-bw-on] .stats dt { font-size: 13px; font-weight: 400; color: var(--bw-text3); }
-html[data-bw-on] .stats dd { font: 700 24px/1.2 var(--font); color: var(--bw-text); font-variant-numeric: tabular-nums; }
-html[data-bw-on] .stats .num { font-family: var(--num); }
-html[data-bw-on][data-bw-look="pocket"] .stats .num { font-size: 28px; font-weight: 800; }
-html[data-bw-on] .stats dd small { font: 400 13px var(--font); color: var(--bw-text3); margin-left: 4px; }
 
-/* the before/after picture in the hero */
-html[data-bw-on] .shot { margin: 36px 0 0; border-radius: var(--r); overflow: hidden; box-shadow: var(--drop); background: var(--bw-surface); }
-html[data-bw-on] .shot img { display: block; width: 100%; height: auto; }
-.shot figcaption { font-size: 14px; padding: 10px 14px; }
-html[data-bw-on] .shot figcaption { color: var(--bw-text3); border-top: 1px solid var(--bw-line); }
-
-/* Problem 1: what changes */
-html[data-bw-on] .feats { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-html[data-bw-on] .feats li { background: var(--bw-surface); border-radius: var(--r); box-shadow: var(--card); padding: 18px 20px; font-size: 16px; }
-html[data-bw-on] .feats h3 { display: flex; gap: 10px; align-items: center; }
-html[data-bw-on] .feats h3 .bw-i { color: var(--bw-acc2); }
-html[data-bw-on] .feats p { margin: 0; }
-
-/* Problem 2: try an answer */
+/* the answer demo */
 html[data-bw-on] .try { padding: 0; overflow: hidden; }
 html[data-bw-on] .try .ask { padding: 22px 24px 20px; display: grid; gap: 14px; }
 html[data-bw-on] .try label { display: grid; gap: 6px; font-size: 14px; font-weight: 700; color: var(--bw-text2); }
@@ -273,12 +245,7 @@ html[data-bw-on] .quiet-note { color: var(--bw-text3); font-size: 15px; margin: 
 html[data-bw-on] .restored { display: flex; gap: 12px; align-items: center; font-size: 14px; color: var(--bw-text2); background: var(--accent-soft); border-radius: 6px; padding: 6px 6px 6px 12px; justify-self: start; }
 html[data-bw-on] .restored button { border: 0; background: var(--bw-surface); color: var(--bw-accent); font-weight: 700; border-radius: 5px; padding: 3px 10px; cursor: pointer; }
 
-/* Problem 3: themes, the settings' theme browser */
-html[data-bw-on] .seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: calc(var(--kr) + 3px); background: var(--bw-surface2); margin: 0 0 14px; }
-html[data-bw-on] .seg button { border: 0; background: none; color: var(--bw-text2); font-weight: 700; font-size: 14px; padding: 6px 14px; border-radius: var(--kr); cursor: pointer; }
-html[data-bw-on] .seg button[aria-pressed="true"] { background: var(--bw-surface); color: var(--bw-text); box-shadow: 0 0 0 1px var(--bw-line), 0 1px 2px rgba(0, 0, 0, .06); }
-html[data-bw-on] .setting { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: center; }
-html[data-bw-on] .setting > span { font-size: 15px; font-weight: 700; color: var(--bw-text); margin-bottom: 14px; }
+/* the theme cards */
 html[data-bw-on] .grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
 html[data-bw-on] .tcard { width: 100%; text-align: left; border: 0; padding: 0; border-radius: var(--r); overflow: hidden; cursor: pointer; background: var(--bw-surface); box-shadow: var(--card); color: var(--bw-text); font: inherit; transition: transform calc(var(--m) * .15s); }
 @media (hover: hover) { html[data-bw-on] .tcard:hover { transform: translateY(-2px); } }
@@ -292,7 +259,7 @@ html[data-bw-on] .tcard b { display: block; font-size: 14px; padding: 8px 10px 0
 html[data-bw-on] .tcard small { display: block; font-size: 12px; color: var(--bw-text3); padding: 0 10px 9px; }
 html[data-bw-on] .tcard .slot { float: right; font-size: 11px; font-weight: 700; color: var(--bw-accent); }
 
-/* Problem 4: install */
+/* install */
 html[data-bw-on] .install { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 html[data-bw-on] .install .card { display: grid; gap: 10px; align-content: start; }
 html[data-bw-on] .install .card.first { box-shadow: 0 0 0 2px var(--bw-accent); }
@@ -302,18 +269,6 @@ html[data-bw-on] .install ol { padding-left: 20px; margin: 0; font-size: 15px; }
 html[data-bw-on] .install .btn { justify-self: start; }
 html[data-bw-on] .pending { font-size: 15px; background: var(--warn-soft); color: var(--bw-text); border-radius: 6px; padding: 10px 14px; }
 
-/* Problem 5: questions */
-html[data-bw-on] .faq { border-radius: var(--r); box-shadow: var(--card); background: var(--bw-surface); overflow: hidden; }
-html[data-bw-on] details { border: 0; border-top: 1px solid var(--bw-line); padding: 0; margin: 0; }
-html[data-bw-on] details:first-child { border-top: 0; }
-html[data-bw-on] summary { list-style: none; display: flex; gap: 12px; align-items: center; padding: 15px 20px; font-weight: 700; color: var(--bw-text); font-size: 16px; }
-html[data-bw-on] summary::-webkit-details-marker { display: none; }
-html[data-bw-on] summary::after { content: ""; margin-left: auto; flex: none; width: 7px; height: 7px; border: solid var(--bw-text3); border-width: 0 1.8px 1.8px 0; transform: rotate(45deg); transition: transform calc(var(--m) * .2s); }
-html[data-bw-on] details[open] summary::after { transform: rotate(225deg); }
-@media (hover: hover) { html[data-bw-on] summary:hover { background: var(--bw-surface2); } }
-html[data-bw-on] details > div { padding: 0 20px 16px; font-size: 16px; }
-html[data-bw-on] details > div > :last-child { margin-bottom: 0; }
-
 /* the guide page's tables */
 html[data-bw-on] table.sheet { border-collapse: separate; border-spacing: 0; background: var(--bw-surface); border-radius: var(--r); box-shadow: var(--card); overflow: hidden; font-size: 15.5px; }
 html[data-bw-on] table.sheet th, html[data-bw-on] table.sheet td { border: 0; border-top: 1px solid var(--bw-line); padding: 10px 14px; }
@@ -321,16 +276,8 @@ html[data-bw-on] table.sheet thead th { border-top: 0; background: var(--bw-surf
 html[data-bw-on] table.sheet td:first-child { white-space: nowrap; }
 html[data-bw-on] .prose p, html[data-bw-on] .prose li { max-width: 40em; }
 html[data-bw-on] .msg { font: 400 .92em var(--mono); color: var(--bw-text); }
-html[data-bw-on] .toc { columns: 2; padding-left: 20px; font-size: 15px; }
 
-/* the shortcuts sheet and the off notice */
-.sheet-dlg { max-width: 460px; width: calc(100% - 32px); }
-html[data-bw-on] .sheet-dlg { border: 0; border-radius: var(--r); background: var(--bw-surface); color: var(--bw-text2); box-shadow: var(--drop); padding: 22px 24px; }
-.sheet-dlg::backdrop { background: rgba(20, 16, 8, .35); }
-html[data-bw-on] .sheet-dlg dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 18px; font-size: 15px; margin: 12px 0 14px; }
-html[data-bw-on] .sheet-dlg dt { white-space: nowrap; }
-html[data-bw-on] .sheet-dlg dd { margin: 0; }
-html[data-bw-on] .sheet-dlg .here { font-size: 12px; font-weight: 700; color: var(--bw-ok); margin-left: 6px; }
+/* the toast */
 html[data-bw-on] .toast { position: fixed; left: 50%; bottom: 20px; z-index: 40; transform: translate(-50%, 8px); opacity: 0; pointer-events: none; padding: 10px 16px; border-radius: var(--kr); background: var(--bw-chrome-bg); color: var(--bw-chrome-fg); font-size: 15px; transition: opacity calc(var(--m) * .2s), transform calc(var(--m) * .2s); }
 html[data-bw-on] .toast.show { opacity: 1; transform: translate(-50%, 0); }
 .toast { display: none; }
@@ -341,11 +288,78 @@ html[data-bw-on] .foot a { color: var(--bw-text2); }
 html[data-bw-on] .foot p { margin: 0; }
 html[data-bw-on] .foot .fine { flex-basis: 100%; }
 
+/* the home page: one screen per pitch. On a screen tall enough to hold them, scrolling snaps from one to the next. */
+html[data-bw-on]:has(.screen) { scroll-padding-top: 57px; }
+@media (min-width: 900px) and (min-height: 600px) {
+  html[data-bw-on]:has(.screen) { scroll-snap-type: y mandatory; }
+}
+html[data-bw-on] body > main { max-width: none; padding: 0; overflow-x: clip; }
+html[data-bw-on] .screen { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; align-content: center; max-width: 1180px; min-height: calc(100vh - 57px); min-height: calc(100svh - 57px); margin: 0 auto; padding: 56px 24px; scroll-snap-align: start; }
+html[data-bw-on] .screen.flip { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+html[data-bw-on] .screen.flip > .copy { order: 2; }
+html[data-bw-on] .screen h2 { font-size: clamp(1.9rem, 3.6vw, 2.6rem); letter-spacing: -.02em; line-height: 1.1; margin-bottom: 16px; }
+html[data-bw-on] .screen .copy > p:not(.muted) { font-size: 1.15rem; max-width: 30em; }
+html[data-bw-on] .screen.opening { grid-template-columns: minmax(0, 6fr) minmax(0, 7fr); }
+html[data-bw-on] .opening h1 { font-size: clamp(2.6rem, 5vw, 3.8rem); }
+html[data-bw-on] .opening .lede { margin-bottom: 0; }
+html[data-bw-on] .opening .keys { margin: 30px 0 12px; }
+html[data-bw-on] .btn.big { padding: 14px 22px; font-size: 17px; }
+html[data-bw-on] .btn.small { padding: 7px 13px; font-size: 14px; }
+html[data-bw-on] .bar .btn.small { color: var(--bw-on-accent); }
+
+html[data-bw-on] .shot { margin: 0; border-radius: var(--r); overflow: hidden; box-shadow: var(--drop); background: var(--bw-surface); }
+html[data-bw-on] .shot img { width: 100%; }
+html[data-bw-on] .shot .dark, html[data-bw-on][data-bw-scheme="dark"] .shot .light { display: none; }
+html[data-bw-on][data-bw-scheme="dark"] .shot .dark { display: block; }
+/* the set page is short: show its top, where the due date and the progress bar are */
+html[data-bw-on] .shot.crop img { aspect-ratio: 1280 / 600; object-fit: cover; object-position: top; }
+html[data-bw-on][data-bw-scheme="dark"] .shot.crop img { filter: brightness(.82); }
+
+html[data-bw-on] .row b.bad { color: var(--bw-bad); }
+html[data-bw-on] #themes .grid { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 10px; }
+html[data-bw-on] #reset { margin-top: 8px; }
+
+html[data-bw-on] .screen.last { display: flex; flex-direction: column; max-width: none; padding: 0; }
+html[data-bw-on] .last .inner { flex: 1; display: flex; flex-direction: column; justify-content: center; width: 100%; max-width: 860px; margin: 0 auto; padding: 56px 24px 40px; }
+html[data-bw-on] .last .lede { max-width: 34em; }
+html[data-bw-on] .last .install { margin: 16px 0 24px; }
+html[data-bw-on] .last .install .card { padding: 24px; }
+html[data-bw-on] .last .install h3 { font-size: 1.25rem; }
+html[data-bw-on] .last .foot { width: 100%; }
+
+/* the dots on the right: where you are, and a way to jump */
+@media (min-width: 1000px) {
+  html[data-bw-on] .dots { position: fixed; right: 22px; top: 50%; transform: translateY(-50%); z-index: 25; display: flex; flex-direction: column; gap: 12px; }
+  html[data-bw-on] .dots a { position: relative; display: block; width: 8px; height: 8px; border-radius: 4px; background: var(--line2); transition: height calc(var(--m) * .3s), background calc(var(--m) * .3s); }
+  html[data-bw-on] .dots a::before { content: ""; position: absolute; inset: -7px -9px; }
+  html[data-bw-on] .dots a[aria-current] { height: 26px; background: var(--bw-accent); }
+  html[data-bw-on] .dots span { position: absolute; right: 22px; top: 50%; transform: translate(6px, -50%); white-space: nowrap; font-size: 13px; font-weight: 700; color: var(--bw-text2); background: var(--bw-surface); box-shadow: var(--card); padding: 3px 9px; border-radius: 5px; opacity: 0; pointer-events: none; transition: opacity calc(var(--m) * .15s), transform calc(var(--m) * .15s); }
+  html[data-bw-on] .dots a:is(:hover, :focus-visible) span { opacity: 1; transform: translate(0, -50%); }
+}
+
+/* scrolling in: boot.js sets data-anim (motion allowed, IntersectionObserver there) and site.js adds .in to a screen
+   the first time it shows; --i staggers the parts in their order */
+html[data-bw-on][data-anim] [data-rise] { opacity: 0; transform: translateY(32px); transition: opacity .8s cubic-bezier(.2, .7, .2, 1), transform .8s cubic-bezier(.2, .7, .2, 1); transition-delay: calc(var(--i, 0) * 110ms); }
+html[data-bw-on][data-anim] .shot.tilt[data-rise] { transform: perspective(1600px) rotateX(16deg) translateY(70px) scale(.92); transform-origin: 50% 100%; transition-duration: 1.2s; }
+html[data-bw-on][data-anim] [data-rise="side"] { transform: translateX(80px); }
+html[data-bw-on][data-anim] .in [data-rise], html[data-bw-on][data-anim] .in .shot.tilt[data-rise] { opacity: 1; transform: none; }
+html[data-bw-on][data-anim] .grid li { transition: opacity .5s ease-out, transform .5s cubic-bezier(.2, .7, .2, 1); transition-delay: calc(250ms + var(--n, 0) * 45ms); }
+html[data-bw-on][data-anim] .screen:not(.in) .grid li { opacity: 0; transform: translateY(18px) scale(.95); }
+
+@media (max-width: 899px) {
+  html[data-bw-on] .screen { grid-template-columns: minmax(0, 1fr); gap: 28px; min-height: 0; padding: 56px 16px; }
+  html[data-bw-on] .screen:is(.flip, .opening) { grid-template-columns: minmax(0, 1fr); }
+  html[data-bw-on] .screen.flip > .copy { order: 0; }
+  html[data-bw-on] .opening { padding-top: 32px; }
+  html[data-bw-on] .screen.last { padding: 0; }
+  html[data-bw-on] .last .inner { padding: 56px 16px 32px; }
+}
+
 /* a phone: the strip becomes a row under the bar, like the set strip above the sheet */
 @media (max-width: 860px) {
   html[data-bw-on] .wrap { display: block; padding-top: 0; }
   html[data-bw-on] .strip { position: sticky; top: 56px; z-index: 20; margin: 0 -16px 24px; border-radius: 0; box-shadow: 0 1px 0 var(--bw-line); background: color-mix(in srgb, var(--bw-bg) 94%, transparent); backdrop-filter: blur(8px); }
-  html[data-bw-on] .strip h2, html[data-bw-on] .strip .meter { display: none; }
+  html[data-bw-on] .strip h2 { display: none; }
   html[data-bw-on] .strip ol { display: flex; overflow-x: auto; scrollbar-width: none; padding: 6px 10px; gap: 2px; }
   html[data-bw-on] .strip li a { white-space: nowrap; font-size: 14px; padding: 6px 10px; }
   html[data-bw-on] .strip .n { display: none; }
@@ -356,10 +370,8 @@ html[data-bw-on] .foot .fine { flex-basis: 100%; }
   html[data-bw-on] body { font-size: 16px; }
   html[data-bw-on] .bar { gap: 10px; }
   html[data-bw-on] .crumbs, html[data-bw-on] .ghlink { display: none; }
-  html[data-bw-on] .feats, html[data-bw-on] .install { grid-template-columns: minmax(0, 1fr); }
-  html[data-bw-on] .stats { gap: 22px; }
+  html[data-bw-on] .install { grid-template-columns: minmax(0, 1fr); }
   html[data-bw-on] .card, html[data-bw-on] .try .ask, html[data-bw-on] .out { padding-left: 16px; padding-right: 16px; }
-  html[data-bw-on] .toc { columns: 1; }
   html[data-bw-on] table.sheet td:first-child { white-space: normal; }
 }
 
