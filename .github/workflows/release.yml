@@ -4,7 +4,7 @@
 # Firefox: web-ext submits the -firefox.zip to addons.mozilla.org as a listed version; Mozilla signs it,
 #   reviews it and sends it to installed copies. The first one also creates the listing from store/amo-metadata.json.
 #   Needs the secrets AMO_JWT_ISSUER, AMO_JWT_SECRET (https://addons.mozilla.org/developers/addon/api/key/).
-# The README's "Releases" section has the one-time setup.
+# RELEASING.md has the one-time setup.
 name: Release
 on:
   push:
