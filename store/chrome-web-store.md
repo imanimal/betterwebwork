@@ -90,7 +90,7 @@ Saves the user's settings, themes, a log of their own checked and submitted answ
 Host permissions (`*://*/webwork2`, `*://*/webwork2/*`)
 
 ```text
-WeBWorK is self-hosted: each school runs it at its own domain, always under the /webwork2/ path, so the domains can't be listed in advance. These patterns limit the extension to WeBWorK pages, where its content scripts restyle the page and the toolbar popup reads the current tab's address to show its course. It runs on no other pages and makes no network requests.
+WeBWorK is self-hosted: each school runs it at its own domain, always under the /webwork2/ path, so the domains can't be listed in advance. These patterns limit the extension to WeBWorK pages, where its content scripts restyle the page and the toolbar popup reads the current tab's address to show its course. It runs on no other pages, and its only network requests are to the WeBWorK site itself: on a problem page it fetches the next problem ahead of time so going to it is quick.
 ```
 
 **Remote code:** No, I am not using remote code.

@@ -13,6 +13,18 @@
   const r = BW.ww.route(location.href);
   root.dataset.bwPage = r ? r.kind : "page";
   root.dataset.bwOn = "";
+  // here from the problem next door (app.js leave() left a note): come in the way that one went out. The content
+  // waits unseen until app.js is ready, or two and a half seconds if it never is.
+  if (r && r.kind === "problem" && window.top === window) try {
+    const go = JSON.parse(sessionStorage.getItem("bww.go") || "null");
+    if (go && go.t) {
+      sessionStorage.setItem("bww.go", JSON.stringify({ m: go.m }));
+      if (go.to === r.key && Date.now() - go.t < 5000 && root.dataset.bwMotion !== "off" && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        root.dataset.bwEnter = go.m; root.dataset.bwDir = go.dir;
+        setTimeout(() => { if (!root.hasAttribute("data-bw-ready")) delete root.dataset.bwEnter; }, 2500);
+      }
+    }
+  } catch (e) { /* no session storage here */ }
   if (!document.getElementById("bw-fonts")) {
     const st = document.createElement("style");
     st.id = "bw-fonts";

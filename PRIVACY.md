@@ -29,7 +29,7 @@ Removing the extension deletes its own storage. The copies in a WeBWorK site's s
 
 ## What it sends
 
-Nothing. The extension makes no network requests of its own, and its fonts are inside the extension. The only link out is in the theme settings: asking a chatbot for a theme opens that chatbot in a new tab with a prompt filled in. The prompt holds the theme format and any idea you typed for the theme, nothing about you or your WeBWorK work, and nothing opens unless you press it.
+Nothing. Its fonts are inside the extension, and the only requests it makes are to the WeBWorK site you're on: on a problem page, your browser fetches the next problem ahead of time (and another problem when you rest the pointer on its link) so going to it is quick. That's the same page you'd get by clicking, from the same server, with nothing added. The only link out is in the theme settings: asking a chatbot for a theme opens that chatbot in a new tab with a prompt filled in. The prompt holds the theme format and any idea you typed for the theme, nothing about you or your WeBWorK work, and nothing opens unless you press it.
 
 ## Permissions
 

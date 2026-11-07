@@ -35,7 +35,7 @@
     },
     {
       "matches": ["*://*/webwork2", "*://*/webwork2/*"],
-      "js": ["src/lib/icons.js", "src/lib/advice.js", "src/ui/kit.js", "src/ui/settings.js", "src/content/app.js"],
+      "js": ["src/lib/icons.js", "src/lib/advice.js", "src/ui/kit.js", "src/ui/settings.js", "src/content/viewer.js", "src/content/app.js"],
       "run_at": "document_idle",
       "all_frames": true
     }

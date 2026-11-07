@@ -569,3 +569,101 @@ html[data-bw-on] .bw-closed[open] > summary::before { content: "Hide"; }
 @media (hover: hover) { html[data-bw-on] .bw-closed > summary:hover { color: var(--bw-text); } }
 html[data-bw-on] .bw-setacts .bw-key, html[data-bw-on] .bw-head .bw-key { text-decoration: none !important; }
 html[data-bw-on] .bw-topbar .bw-key { text-decoration: none !important; }
+
+/* ── the image viewer (content/viewer.js): a window over the page, not a modal, so the page stays usable ── */
+html[data-bw-on] .bw-lifted { visibility: hidden; }
+html[data-bw-on] .bw-view {
+  position: fixed; display: flex; flex-direction: column; background: var(--bw-surface); border-radius: var(--bw-r); box-shadow: var(--bw-drop);
+  min-width: 0; overscroll-behavior: contain;
+}
+html[data-bw-on] body .bw-view:focus-visible { outline: none !important; }
+html[data-bw-on] .bw-view.pop { animation: bw-vpop calc(var(--bw-m) * 220ms + 1ms) cubic-bezier(.2, .9, .3, 1); }
+@keyframes bw-vpop { from { opacity: 0; transform: scale(.97); } }
+html[data-bw-on] .bw-vbar { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 14px; border-bottom: 1px solid var(--bw-line); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; flex: none; color: var(--bw-text); }
+html[data-bw-on] .bw-view.moving .bw-vbar { cursor: grabbing; }
+html[data-bw-on] .bw-vt { flex: 1; min-width: 0; font: 600 13.5px/1.2 var(--bw-font); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* zoom is one control: minus, how much, plus. The number fits the image back to the window. */
+html[data-bw-on] .bw-vzoom { display: inline-flex; align-items: stretch; height: 30px; border-radius: var(--bw-kr); box-shadow: inset 0 0 0 1px var(--bw-line2); overflow: hidden; flex: none; }
+html[data-bw-on] .bw-vzoom .bw-key { min-height: 0; height: 30px; width: 32px; border-radius: 0; margin: 0; }
+html[data-bw-on] .bw-vpct { min-width: 54px; padding: 0 6px; border: 0; border-inline: 1px solid var(--bw-line2); background: transparent; color: var(--bw-text2); font: 600 12px/1 var(--bw-mono); font-variant-numeric: tabular-nums; cursor: pointer; }
+@media (hover: hover) { html[data-bw-on] .bw-vpct:hover { background: var(--bw-surface2); color: var(--bw-text); } }
+html[data-bw-on] .bw-vstage {
+  position: relative; flex: 1; min-height: 0; overflow: hidden; border-radius: 0 0 var(--bw-r) var(--bw-r); background: var(--bw-bg2);
+  cursor: zoom-in; touch-action: none; user-select: none; -webkit-user-select: none;
+}
+html[data-bw-on] .bw-vstage.at-max { cursor: zoom-out; }
+html[data-bw-on] .bw-vstage.grabbing { cursor: grabbing; }
+html[data-bw-on] .bw-vpic { position: absolute; left: 0; top: 0; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; transform-origin: 0 0; -webkit-user-drag: none; pointer-events: none; }
+html[data-bw-on] .bw-vpic.glide { transition: width calc(var(--bw-m) * 200ms) cubic-bezier(.2, .9, .3, 1), height calc(var(--bw-m) * 200ms) cubic-bezier(.2, .9, .3, 1), transform calc(var(--bw-m) * 200ms) cubic-bezier(.2, .9, .3, 1); }
+html[data-bw-on] .bw-vghost { position: fixed; z-index: 2147482590; margin: 0 !important; padding: 0 !important; max-width: none !important; transform-origin: 0 0; pointer-events: none; background: var(--bw-bg2); border-radius: 4px; }
+/* graphs on a dark theme, the way the page shows them ("graphs on a dark theme" above) */
+html[data-bw-on][data-bw-scheme="dark"][data-bw-img="panel"] :is(.bw-vstage, .bw-vghost) { background: #fff; }
+html[data-bw-on][data-bw-scheme="dark"][data-bw-img="invert"] :is(.bw-vpic, .bw-vghost) { filter: invert(.9) hue-rotate(180deg); }
+html[data-bw-on] .bw-vhint { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); max-width: calc(100% - 24px); padding: 6px 11px; border-radius: 6px; background: var(--bw-chrome-bg); color: var(--bw-chrome-fg); font: 500 12.5px/1.3 var(--bw-font); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; animation: bw-vhint 3.2s ease both; }
+@keyframes bw-vhint { 0% { opacity: 0; transform: translate(-50%, 6px); } 8%, 82% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; } }
+/* edges you can pull, and a grip in the corner that says so */
+html[data-bw-on] .bw-vedge { position: absolute; z-index: 2; touch-action: none; }
+html[data-bw-on] .bw-vedge:is([data-e="n"], [data-e="s"]) { left: 12px; right: 12px; height: 10px; cursor: ns-resize; }
+html[data-bw-on] .bw-vedge:is([data-e="e"], [data-e="w"]) { top: 12px; bottom: 12px; width: 10px; cursor: ew-resize; }
+html[data-bw-on] .bw-vedge[data-e="n"] { top: -5px; }
+html[data-bw-on] .bw-vedge[data-e="s"] { bottom: -5px; }
+html[data-bw-on] .bw-vedge[data-e="e"] { right: -5px; }
+html[data-bw-on] .bw-vedge[data-e="w"] { left: -5px; }
+html[data-bw-on] .bw-vedge:is([data-e="ne"], [data-e="se"], [data-e="sw"], [data-e="nw"]) { width: 22px; height: 22px; }
+html[data-bw-on] .bw-vedge[data-e="ne"] { top: -6px; right: -6px; cursor: nesw-resize; }
+html[data-bw-on] .bw-vedge[data-e="se"] { bottom: -6px; right: -6px; cursor: nwse-resize; }
+html[data-bw-on] .bw-vedge[data-e="sw"] { bottom: -6px; left: -6px; cursor: nesw-resize; }
+html[data-bw-on] .bw-vedge[data-e="nw"] { top: -6px; left: -6px; cursor: nwse-resize; }
+html[data-bw-on] .bw-vgrip { position: absolute; right: 3px; bottom: 3px; z-index: 1; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 4px; color: var(--bw-text2); background: color-mix(in srgb, var(--bw-surface) 88%, transparent); pointer-events: none; transition: color calc(var(--bw-m) * 120ms); }
+html[data-bw-on] .bw-vgrip .bw-i { width: 9px; height: 9px; vertical-align: 0; }
+html[data-bw-on] .bw-vgrip .bw-i.line { width: 15px; height: 15px; stroke-width: 2; }
+html[data-bw-on] .bw-view.sizing .bw-vgrip, html[data-bw-on] .bw-vedge[data-e="se"]:hover ~ .bw-vgrip { color: var(--bw-text); }
+/* Pocket: a graphite band, and the zoom reads out on a little LCD */
+html[data-bw-on][data-bw-look="pocket"] .bw-vbar { background: var(--bw-chrome-bg); color: var(--bw-chrome-fg); border: 0; border-radius: var(--bw-r) var(--bw-r) 0 0; padding: 5px 6px 5px 12px; }
+html[data-bw-on][data-bw-look="pocket"] .bw-vt { font: 700 11px/1.2 var(--bw-font); text-transform: uppercase; letter-spacing: .11em; }
+html[data-bw-on][data-bw-look="pocket"] .bw-vbar .bw-key.ghost { color: var(--bw-chrome-fg); }
+@media (hover: hover) { html[data-bw-on][data-bw-look="pocket"] .bw-vbar .bw-key.ghost:hover { background: color-mix(in srgb, var(--bw-chrome-fg) 14%, transparent); } }
+html[data-bw-on][data-bw-look="pocket"] .bw-vzoom { box-shadow: none; gap: 4px; overflow: visible; align-items: center; }
+html[data-bw-on][data-bw-look="pocket"] .bw-vzoom .bw-key { border-radius: var(--bw-kr); width: 30px; height: 28px; }
+html[data-bw-on][data-bw-look="pocket"] .bw-vpct {
+  height: 24px; min-width: 58px; border: 0; border-radius: 4px; background-color: var(--bw-disp-bg); color: var(--bw-disp-fg); font: 800 calc(18px * var(--bw-ns)) / 1 var(--bw-num); letter-spacing: .02em;
+  background-image: radial-gradient(color-mix(in srgb, var(--bw-disp-fg) 9%, transparent) 1px, transparent 1.3px); background-size: 3px 3px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .28), inset 0 2px 3px rgba(0, 0, 0, .25);
+}
+@media (hover: hover) { html[data-bw-on][data-bw-look="pocket"] .bw-vpct:hover { background-color: var(--bw-disp-hot); color: var(--bw-disp-fg); } }
+
+/* ── moving between problems (app.js leave(), boot.js): the problem goes out one way and the next comes in the same
+   way, picked at random and never the same twice running. The rail stays put. While the next page sets itself up it
+   waits unseen, so it comes in whole. ── */
+html[data-bw-on] { --bw-go: 1; }
+html[data-bw-on][data-bw-dir="back"] { --bw-go: -1; }
+html[data-bw-on][data-bw-enter]:not([data-bw-ready]) #content > :not(.bw-rail) { opacity: 0; }
+html[data-bw-on][data-bw-enter][data-bw-ready] #content > :not(.bw-rail) { animation: calc(var(--bw-m) * 340ms + 1ms) cubic-bezier(.2, .9, .3, 1) both; }
+html[data-bw-on][data-bw-leave] #content > :not(.bw-rail) { animation: calc(var(--bw-m) * 170ms + 1ms) cubic-bezier(.5, 0, .9, .5) forwards; pointer-events: none; }
+html[data-bw-on][data-bw-enter="slide"][data-bw-ready] #content > :not(.bw-rail) { animation-name: bw-go-slide-in; }
+html[data-bw-on][data-bw-leave="slide"] #content > :not(.bw-rail) { animation-name: bw-go-slide-out; }
+html[data-bw-on][data-bw-enter="rise"][data-bw-ready] #content > :not(.bw-rail) { animation-name: bw-go-rise-in; }
+html[data-bw-on][data-bw-leave="rise"] #content > :not(.bw-rail) { animation-name: bw-go-rise-out; }
+html[data-bw-on][data-bw-enter="zoom"][data-bw-ready] #content > :not(.bw-rail) { animation-name: bw-go-zoom-in; }
+html[data-bw-on][data-bw-leave="zoom"] #content > :not(.bw-rail) { animation-name: bw-go-zoom-out; }
+html[data-bw-on][data-bw-enter="swing"][data-bw-ready] #content > :not(.bw-rail) { animation-name: bw-go-swing-in; transform-origin: 50% 0; }
+html[data-bw-on][data-bw-leave="swing"] #content > :not(.bw-rail) { animation-name: bw-go-swing-out; transform-origin: 50% 0; }
+html[data-bw-on][data-bw-enter="cascade"][data-bw-ready] #content > :not(.bw-rail) { animation-name: bw-go-rise-in; }
+html[data-bw-on][data-bw-leave="cascade"] #content > :not(.bw-rail) { animation-name: bw-go-drop-out; }
+html[data-bw-on][data-bw-enter="cascade"] #content > :nth-child(2) { animation-delay: calc(var(--bw-m) * 50ms); }
+html[data-bw-on][data-bw-enter="cascade"] #content > :nth-child(3) { animation-delay: calc(var(--bw-m) * 100ms); }
+html[data-bw-on][data-bw-enter="cascade"] #content > :nth-child(4) { animation-delay: calc(var(--bw-m) * 150ms); }
+html[data-bw-on][data-bw-enter="cascade"] #content > :nth-child(n+5) { animation-delay: calc(var(--bw-m) * 200ms); }
+/* Pocket only: a stepped wipe, like a small screen redrawing */
+html[data-bw-on][data-bw-enter="wipe"][data-bw-ready] #content > :not(.bw-rail) { animation-name: bw-go-wipe-in; animation-timing-function: steps(7, end); animation-duration: calc(var(--bw-m) * 300ms + 1ms); }
+html[data-bw-on][data-bw-leave="wipe"] #content > :not(.bw-rail) { animation-name: bw-go-wipe-out; animation-timing-function: steps(5, end); }
+@keyframes bw-go-slide-in { from { opacity: 0; transform: translateX(calc(var(--bw-go) * 56px)); } }
+@keyframes bw-go-slide-out { to { opacity: 0; transform: translateX(calc(var(--bw-go) * -40px)); } }
+@keyframes bw-go-rise-in { from { opacity: 0; transform: translateY(26px); } }
+@keyframes bw-go-rise-out { to { opacity: 0; transform: translateY(-14px); } }
+@keyframes bw-go-drop-out { to { opacity: 0; transform: translateY(18px); } }
+@keyframes bw-go-zoom-in { from { opacity: 0; transform: scale(.95); } }
+@keyframes bw-go-zoom-out { to { opacity: 0; transform: scale(1.03); } }
+@keyframes bw-go-swing-in { from { opacity: 0; transform: perspective(1400px) translateX(calc(var(--bw-go) * 36px)) rotateY(calc(var(--bw-go) * -12deg)); } }
+@keyframes bw-go-swing-out { to { opacity: 0; transform: perspective(1400px) translateX(calc(var(--bw-go) * -28px)) rotateY(calc(var(--bw-go) * 10deg)); } }
+@keyframes bw-go-wipe-in { from { clip-path: inset(0 calc(50% + var(--bw-go) * 50%) 0 calc(50% - var(--bw-go) * 50%)); } to { clip-path: inset(0 0 0 0); } }
+@keyframes bw-go-wipe-out { to { clip-path: inset(0 calc(50% - var(--bw-go) * 50%) 0 calc(50% + var(--bw-go) * 50%)); opacity: .4; } }
